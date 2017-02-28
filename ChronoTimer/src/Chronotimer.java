@@ -155,6 +155,14 @@ public class Chronotimer {
 		}
 	}
 	
+	
+	/**
+	 * Method takes the racer's total time, gets the hours, minutes, seconds, 
+	 * and milliseconds from it and returns that in a formatted string.
+	 * 
+	 * @param timeInMS A delta time (the racer's total time in milliseconds).
+	 * @return
+	 */
 	public String parseTime(long timeInMS){
 		long currentTime = timeInMS;
 		
