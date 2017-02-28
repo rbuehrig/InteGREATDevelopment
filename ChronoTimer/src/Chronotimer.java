@@ -60,7 +60,7 @@ public class Chronotimer {
 	
 	
 	/** 
-	* 
+	* Adds the total amount of channels to the class 
 	* 
 	* @version 1 - 02/26/17
 	* @author Matthew Buchanan and Rylie Buehrig
