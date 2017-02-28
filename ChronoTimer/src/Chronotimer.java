@@ -42,7 +42,7 @@ public class Chronotimer {
 		//Allows for a newRun to be called.
 		finishRun = true;
 	}
-
+	public void testMethod(){}
 	
 	/** 
 	* This method initializes the Time and ArrayList
