@@ -56,8 +56,6 @@ public class Chronotimer {
 		
 		//Add two new channels to array list
 		channels = new ArrayList<Channel>();
-		channels.add(new Channel(true,time));
-		channels.add(new Channel(true,time));
 	}
 	
 	
@@ -69,7 +67,8 @@ public class Chronotimer {
 	*/
 	public void setEvent(String eventType){
 		if (eventType.equals("IND")){
-			//add channels
+			channels.add(new Channel(true,time));
+			channels.add(new Channel(true,time));
 		}
 		
 	}
