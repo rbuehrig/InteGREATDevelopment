@@ -42,7 +42,6 @@ public class Chronotimer {
 		//Allows for a newRun to be called.
 		finishRun = true;
 	}
-	public void testMethod(){}
 	
 	/** 
 	* This method initializes the Time and ArrayList
@@ -72,7 +71,6 @@ public class Chronotimer {
 			channels.add(new Channel(true,time));
 			channels.add(new Channel(true,time));
 		}
-		
 	}
 	
 	
@@ -143,7 +141,7 @@ public class Chronotimer {
 			if (racerTimes.get(i) != null) {
 				if (racerTimes.get(i) != ((long) -1)){
 					System.out.println("Racer: " + racerNums.get(i));
-					System.out.println("Total Time: " + racerTimes.get(i) + "\n");
+					System.out.println("Total Time: " + parseTime(racerTimes.get(i)) + "\n");
 				}
 				else{
 					System.out.println("Racer: " + racerNums.get(i));
@@ -157,6 +155,18 @@ public class Chronotimer {
 		}
 	}
 	
+	public String parseTime(long timeInMS){
+		long currentTime = timeInMS;
+		
+		int hour = (int) (currentTime / (60*60*1000));
+		currentTime = currentTime - hour*(60*60*1000);
+		int minute = (int) (currentTime / (60*1000));
+		currentTime = currentTime - minute*(60*1000);
+		int second = (int) (currentTime / 1000);
+		currentTime = currentTime - second*(1000);
+		
+		return (hour + ":" + minute + ":" + second + "." + currentTime);
+	}
 		
 	/** 
 	* This method will create a new run by clearing all 
