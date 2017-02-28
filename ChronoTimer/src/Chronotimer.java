@@ -197,7 +197,6 @@ public class Chronotimer {
 	*/
 	public void DNF(){
 		if (on) time.dnf();
-		//should we change the channel type?
 	}
 
 	
