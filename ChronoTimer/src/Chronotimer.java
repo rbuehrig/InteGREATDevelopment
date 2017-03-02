@@ -12,11 +12,6 @@ public class Chronotimer {
 	//in order. Implemented as an ArrayList for now.
 	ArrayList<Integer> racerNums;
 	
-			//chan will probably have a array of times in the class 
-			//itself and the position of the time can simply indicate the racers time.
-			//possibly the channel class could pass the set user time to the channel 
-			//class and it can somehow use it to initialize each race time to the chronotimers clock.
-	
 	//Keeps track of channels we need to use in the race.
 	ArrayList<Channel> channels;
 	
@@ -63,7 +58,7 @@ public class Chronotimer {
 	/** 
 	* Adds the total amount of channels to the class 
 	* 
-	* @version 1 - 02/26/17
+	* @version 1 - 02/28/17
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void setEvent(String eventType){
@@ -75,13 +70,15 @@ public class Chronotimer {
 	
 	
 	/** 
+	* Calls the Time class to set the time if commands are 
+	* input from a file.
 	* 
-	* 
-	* @version 1 - 02/26/17
-	* @author Matthew Buchanan and Rylie Buehrig
+	* @version 1 - 02/28/17
+	* @author Rylie Buehrig
 	*/
-	public void setTime(){
-		//Nothing happening for now.
+	public void setTime(String timeStamp){
+		long timeLong = time.parseMilli(timeStamp);
+		time.start(timeLong);
 	}
 
 
@@ -202,7 +199,7 @@ public class Chronotimer {
 	*/
 	public void endRun(){
 		finishRun = true;
-		//save current data?
+		//save current data --> Sprint 2
 	}
 	
 	
