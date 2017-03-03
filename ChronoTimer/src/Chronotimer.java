@@ -63,7 +63,7 @@ public class Chronotimer {
 	* @version 1 - 02/26/17
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
-	private void reset(){
+	public void reset(){
 		time = new Time();
 		racerNums = new ArrayList<Integer>();
 		

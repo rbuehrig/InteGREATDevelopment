@@ -13,7 +13,7 @@ import java.io.*;
 * @author Nicholas Kopplin
 */
 public class Simulator {
-
+	public static void main(String[] args) {
 	//Timmy is his name and it's not changing
 	Chronotimer timmy = new Chronotimer();
 	boolean programRunning = true;
@@ -29,7 +29,7 @@ public class Simulator {
 		System.out.println("File not found. Please use the console.");
 		scan = new Scanner(System.in);
 	}
-	
+	timmy.setTime("" + System.currentTimeMillis());
 	//Loop through input until we get an exit command. Even if the machine is turned on and off
 	while(programRunning){
 		String input = scan.next();
@@ -49,9 +49,12 @@ public class Simulator {
 			//Break the timestamp (if it exists) into list elements which should be HH, MM, SS
 			//List<String> timeList = Arrays.asList(input.split(":"));
 			//timmy.setTime(timeList.get(0), timeList.get(1), timeList.get(2));
-			timmy.setTime(input);
+			//change - remove setTime from here
+			input = scan.next();//change - read from text file, get line after timestamp
 		}
-		switch(scan.next()){
+		//timmy.setTime(system time); change - is this the right idea to set the time at the very start to system time if not file
+		//switch(scan.next()){//instead of automatically reading from next input will have the next command
+		switch(input){
 			case "POWER":
 				timmy.powerToggle();
 				break;
@@ -64,11 +67,11 @@ public class Simulator {
 				break;
 			case "TIME": 
 				 //TODO ^ See above ^ 
-				List<String> timeLister = Arrays.asList(scan.next().split(":"));
+				//List<String> timeLister = Arrays.asList(scan.next().split(":"));//change - we dont need this, we arent listing times
 				timmy.setTime(scan.next());//change - time stamp after time passed to setTime
 				break;
 			case "DNF":
-				timmy.DNF();//change - does have DNF method
+				timmy.dnf();//change - does have DNF method
 				//TODO !!!! timmy needs a did not finish function!!!!!!
 				break;
 			case "CANCEL":
@@ -111,5 +114,6 @@ public class Simulator {
 				System.out.println("You can't do that");
 				break;
 		}
+	}
 	}
 }
