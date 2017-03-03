@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.text.*;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,7 +17,7 @@ public class Simulator {
 		Scanner scan;
 		
 		try{
-			scan = new Scanner(new File("CTS1RUN2"));
+			scan = new Scanner(new File("no"));
 		}
 		catch(FileNotFoundException e){
 			System.out.println("File not found. Please use the console.");
@@ -27,25 +27,21 @@ public class Simulator {
 		
 		String input;
 		String timeStamp;
-		Calendar date = new GregorianCalendar();
+		Date date = new Date();
+		boolean cmdFile = false;
 		
 		while(programRunning){
 			input = scan.next();
 			timeStamp = null;
+			date = new Date();
 			if (input.contains(":")) {
-				//TODO So yeah, I need some kind of set time, this is my way to handle the time stamps
-				// at the start of the console files. This problem also comes up for the time command.
-				// NOTE: I'm leaving it to chronotimer to print out any output, this includes the time stamps
-				// WE are supposed to print out before each input to the console. I figure there can just be a 
-				// "was time just set" check and if it's true we won't print our own timestamps, as they will be
-				// entered by the read file.
-				
-				//Break the timestamp (if it exists) into list elements which should be HH, MM, SS
 				timeStamp = input;
 				input = scan.next();
+				cmdFile = true;
 			}
 			else{
-				timeStamp = Integer.toString(date.get(date.HOUR_OF_DAY)) + ":" + Integer.toString(date.get(date.MINUTE)) + ":" + Integer.toString(date.get(date.SECOND));
+				cmdFile = false;
+				timeStamp = date.toString().substring(11, 19);
 			}
 			
 			int channel;
@@ -67,7 +63,6 @@ public class Simulator {
 					param = scan.next();
 					break;
 				case "DNF":
-					//TODO !!!! timmy needs a did not finish function!!!!!!
 					timmy.DNF();
 					break;
 				case "CANCEL":
@@ -93,7 +88,7 @@ public class Simulator {
 					 * This will need to be modified when we add new event types
 					 */
 					if(trigger <= 2){
-						if(timeStamp != null){
+						if(cmdFile){
 							timmy.trigger(trigger, timeStamp);
 						}
 						else{
