@@ -7,7 +7,6 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Scanner;
 
-
 public class Simulator {
 	
 	public static void main(String[] args) {
@@ -23,7 +22,6 @@ public class Simulator {
 			System.out.println("File not found. Please use the console.");
 			scan = new Scanner(System.in);
 		}
-		
 		
 		String input;
 		String timeStamp;
@@ -45,7 +43,7 @@ public class Simulator {
 				input = scan.next();
 			}
 			else{
-				timeStamp = Integer.toString(date.get(date.HOUR_OF_DAY)) + ":" + Integer.toString(date.get(date.MINUTE)) + ":" + Integer.toString(date.get(date.SECOND));
+				timeStamp = Integer.toString(date.get(date.HOUR_OF_DAY)) + ":" + Integer.toString(date.get(date.MINUTE)) + ":" + Integer.toString(date.get(date.SECOND) );
 			}
 			
 			int channel;
@@ -67,7 +65,6 @@ public class Simulator {
 					param = scan.next();
 					break;
 				case "DNF":
-					//TODO !!!! timmy needs a did not finish function!!!!!!
 					timmy.DNF();
 					break;
 				case "CANCEL":
