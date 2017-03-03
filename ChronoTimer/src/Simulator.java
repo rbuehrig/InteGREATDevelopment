@@ -110,10 +110,12 @@ public class Simulator {
 					break;
 				case "NUM":
 					int number = scan.nextInt();
+					param = Integer.toString(number);
 					timmy.setNum(number);
 					break;
 				case "EVENT":
 					String event = scan.next();
+					param = event;
 					timmy.setEvent(event);
 					break;
 				case "PRINT":
