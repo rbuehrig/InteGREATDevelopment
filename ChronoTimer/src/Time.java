@@ -99,6 +99,15 @@ public class Time {
 	}
 	
 	/**
+	 * Returns the amount of racers that have started.
+	 * 
+	 * @return number of started races
+	 */
+	public int getNumTimes(){
+		return startTimes.size();
+	}
+	
+	/**
 	 * Returns a list of racer times in order of when the start gate was triggered
 	 * 
 	 * @return LinkedList of racer times
