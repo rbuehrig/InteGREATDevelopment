@@ -34,6 +34,11 @@ public class Simulator {
 	while(programRunning){
 		String input = scan.next();
 		if (input.contains(":")) {
+			//Matt comment
+			//We do need to check to see if it has : to see if it did come from a file, but we dont need to split it here
+			//and it probably shouldnt be the job of the simulator to do this anyway
+			
+			
 			//TODO So yeah, I need some kind of set time, this is my way to handle the time stamps
 			// at the start of the console files. This problem also comes up for the time command.
 			// NOTE: I'm leaving it to chronotimer to print out any output, this includes the time stamps
@@ -42,8 +47,9 @@ public class Simulator {
 			// entered by the read file.
 			
 			//Break the timestamp (if it exists) into list elements which should be HH, MM, SS
-			List<String> timeList = Arrays.asList(input.split(":"));
-			timmy.setTime(timeList[0], timeList[1], timeList[2]);
+			//List<String> timeList = Arrays.asList(input.split(":"));
+			//timmy.setTime(timeList.get(0), timeList.get(1), timeList.get(2));
+			timmy.setTime(input);
 		}
 		switch(scan.next()){
 			case "POWER":
@@ -59,9 +65,10 @@ public class Simulator {
 			case "TIME": 
 				 //TODO ^ See above ^ 
 				List<String> timeLister = Arrays.asList(scan.next().split(":"));
-				timmy.setTime(timeLister[0], timeLister[1], timeLister[2]);
+				timmy.setTime(scan.next());//change - time stamp after time passed to setTime
 				break;
 			case "DNF":
+				timmy.DNF();//change - does have DNF method
 				//TODO !!!! timmy needs a did not finish function!!!!!!
 				break;
 			case "CANCEL":
