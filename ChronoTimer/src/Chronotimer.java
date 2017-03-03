@@ -1,12 +1,21 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-//Test push comment 
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//Authors: Matthew and Rylie
+//
+//
+//Description: Chronotimer serves as an 
+//interface to the simulator.
+//
+//////////////////////////////////////////
 
 public class Chronotimer {
 	//This time variable will serve as the keeper of 
 	//racer's start and finish times for reference.
-	Time time;
+	private Time time;
 	
 	//A queue to keep track of each racer's number
 	//in order. Implemented as an ArrayList for now.
@@ -14,12 +23,53 @@ public class Chronotimer {
 	
 	//Keeps track of channels we need to use in the race.
 	ArrayList<Channel> channels;
+	private final int NUM_CHANNELS = 8;
 	
 	//Boolean to keep track of if the system has been turned on.
-	protected boolean on = false;
-
-	//Boolean to keep track of if the current run has finished. 
-	protected boolean finishRun;
+	protected boolean on;
+	
+	private boolean newRunCalled;
+	//Keep track of EVENT is called
+	private boolean eventSet;
+	
+	//keep track of how many times toggle is called
+	private int toggleCalled;
+	private int triggerCalled;
+	
+	
+	/**
+	 * Constructor
+	 * 
+	 * @author Philip Kocol
+	 */
+	public Chronotimer(){
+		racerNums = new ArrayList<Integer>();
+		channels = new ArrayList<Channel>(NUM_CHANNELS);
+		
+		on = false;
+		newRunCalled = false;
+		eventSet = false;
+		triggerCalled = 0;
+		toggleCalled = 0;	
+	}
+	
+	/**
+	 * Initializes array list of channels for use
+	 * Sets odd channels to "start"(true) and even to "finish"(false)
+	 * For use by constructor and reset() only
+	 * 
+	 * @author Philip Kocol
+	 */
+	private void initChannels(){
+		for(int i = 0; i <= NUM_CHANNELS; i++){
+			if(i%2 == 0){
+				channels.add(new Channel(true, time));
+			}
+			else{
+				channels.add(new Channel(false, time));
+			}
+		}
+	}
 	
 	
 	/** 
@@ -31,11 +81,18 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void powerToggle(){			
-		reset();
-		on = !on;
-		
+		if(on){
+			on = !on;
+		}
+		else{
+			reset();
+			on = !on;
+		}
 		//Allows for a newRun to be called.
-		finishRun = true;
+		newRunCalled = false;
+		eventSet = false;
+		triggerCalled = 0;
+		toggleCalled = 0;
 	}
 	
 	/** 
@@ -51,7 +108,8 @@ public class Chronotimer {
 		racerNums = new ArrayList<Integer>();
 		
 		//Add two new channels to array list
-		channels = new ArrayList<Channel>();
+		channels = new ArrayList<Channel>(NUM_CHANNELS);
+		initChannels();
 	}
 	
 	
@@ -62,9 +120,14 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void setEvent(String eventType){
-		if (eventType.equals("IND")){
-			channels.add(new Channel(true,time));
-			channels.add(new Channel(true,time));
+		if (on){
+			switch (eventType){
+				case "IND":
+					channels.get(0).setType(true);
+					channels.get(1).setType(false);;
+					eventSet = true;
+					break;
+			}
 		}
 	}
 	
@@ -77,8 +140,10 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void setTime(String timeStamp){
-		long timeLong = time.parseMilli(timeStamp);
-		time.start(timeLong);
+		if (on){
+			long timeLong = time.parseMilli(timeStamp);
+			time.start(timeLong);
+		}
 	}
 
 
@@ -91,7 +156,9 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void setNum(int racerNum){
-		racerNums.add(racerNum);
+		if (on && newRunCalled && eventSet){
+			racerNums.add(racerNum);
+		}
 	}
 	
 	
@@ -130,24 +197,26 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void print(){
-		LinkedList<Long> racerTimes = time.getTimes();
-		//int totalNumRacers = racerTimes.size();
+		if (on && eventSet && newRunCalled)	{
+			LinkedList<Long> racerTimes = time.getTimes();
+			//int totalNumRacers = racerTimes.size();
 		
-		for (int i = 0; i < racerNums.size(); i++){
-			//Make sure DNF flag was not set
-			if (racerTimes.get(i) != null) {
-				if (racerTimes.get(i) != ((long) -1)){
-					System.out.println("Racer: " + racerNums.get(i));
-					System.out.println("Total Time: " + parseTime(racerTimes.get(i)) + "\n");
+			for (int i = 0; i < racerNums.size(); i++){
+				//Make sure DNF flag was not set
+				if (i < racerTimes.size()) {
+					if (racerTimes.get(i) != ((long) -1)){
+						System.out.println("Racer: " + racerNums.get(i));
+						System.out.println("Total Time: " + parseTime(racerTimes.get(i)) + "\n");
+					}
+					else{
+						System.out.println("Racer: " + racerNums.get(i));
+						System.out.println("Did not finish the race.\n");
+					}
 				}
-				else{
+				else {
 					System.out.println("Racer: " + racerNums.get(i));
-					System.out.println("Did not finish the race.\n");
+					System.out.println("Did not start the race.\n");
 				}
-			}
-			else {
-				System.out.println("Racer: " + racerNums.get(i));
-				System.out.println("Did not start the race.\n");
 			}
 		}
 	}
@@ -181,9 +250,9 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void newRun(){
-		if (finishRun) {
+		if (on) {
 			reset();
-			finishRun = false;
+			newRunCalled = true;
 		}
 	}
 	
@@ -198,7 +267,7 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void endRun(){
-		finishRun = true;
+		if (newRunCalled) newRunCalled = false;
 		//save current data --> Sprint 2
 	}
 	
@@ -211,7 +280,7 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void DNF(){
-		if (on) time.dnf();
+		if (on && eventSet && newRunCalled) time.dnf();
 	}
 
 	
@@ -223,7 +292,9 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void cancel(){
-		if (on) time.cancel();
+		if (on) {
+			time.cancel();
+		}
 	}
 
 	
@@ -235,7 +306,10 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void toggle(int channelNum){
-		if (on) channels.get(channelNum - 1).toggle();
+		if (on && eventSet && newRunCalled) {
+			channels.get(channelNum - 1).toggle();
+			toggleCalled++;
+		}
 	}
 	
 
@@ -247,6 +321,14 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void trigger(int channelNum){
-		if (on) channels.get(channelNum - 1).trigger();
+		if (on && newRunCalled && eventSet && (time.getTimes().size() <= racerNums.size())) {
+			channels.get(channelNum - 1).trigger();
+		}
+	}
+	
+	public void trigger(int channelNum, String customTime){
+		if (on && newRunCalled && eventSet && (time.getTimes().size() <= racerNums.size())) {
+			channels.get(channelNum - 1).trigger(time.parseMilli(customTime));
+		}
 	}
 }

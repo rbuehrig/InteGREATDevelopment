@@ -8,8 +8,6 @@ public class Time {
 	private LinkedList<Long> startTimes;
 	private LinkedList<Long> racerTimes;
 	
-	private Clock clock;
-	
 	public Time(){
 		startTimes = new LinkedList<Long>();
 		racerTimes = new LinkedList<Long>();
@@ -23,7 +21,7 @@ public class Time {
 	 * @return clock.millis()
 	 */
 	public long start(){
-		long start = clock.millis();
+		long start = System.currentTimeMillis();
 		startTimes.add(start);
 		return start;
 	}
@@ -50,9 +48,12 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(){
-		if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
+		if(startTimes.isEmpty()){
+			System.out.println("No racers started");
+			return -1;
+		}
 		
-		long finish = clock.millis();
+		long finish = System.currentTimeMillis();
 		long start = startTimes.pollFirst();
 		long time = finish - start;
 		racerTimes.add(time);
@@ -128,7 +129,7 @@ public class Time {
 		long hour = Long.parseLong(parts[0]);
 		long minute = Long.parseLong(parts[1]);
 		String second = parts[2];
-		String[] secondParts = second.split(".");
+		String[] secondParts = second.split("\\.");
 		long second1 = Long.parseLong(secondParts[0]);
 		long second2 = Long.parseLong(secondParts[1]); 
 		

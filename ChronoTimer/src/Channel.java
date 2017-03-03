@@ -29,11 +29,30 @@ public class Channel {
 	 * If it's a finish channel, calculates and returns the time for the next finishing racer
 	 */
 	public long trigger(){
+		if(armed = false){
+			System.out.println("Channel is not active");
+			return -1;
+		}
+		
 		if(type == true){
 			return time.start();
 		}
 		else{
 			return time.finish();
+		}
+	}
+	
+	public long trigger(long customTime){
+		if(armed = false){
+			System.out.println("Channel is not active");
+			return -1;
+		}
+		
+		if(type == true){
+			return time.start(customTime);
+		}
+		else{
+			return time.finish(customTime);
 		}
 	}
 	
