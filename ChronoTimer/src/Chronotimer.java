@@ -12,11 +12,6 @@ public class Chronotimer {
 	//in order. Implemented as an ArrayList for now.
 	ArrayList<Integer> racerNums;
 	
-			//chan will probably have a array of times in the class 
-			//itself and the position of the time can simply indicate the racers time.
-			//possibly the channel class could pass the set user time to the channel 
-			//class and it can somehow use it to initialize each race time to the chronotimers clock.
-	
 	//Keeps track of channels we need to use in the race.
 	ArrayList<Channel> channels;
 	
@@ -42,7 +37,6 @@ public class Chronotimer {
 		//Allows for a newRun to be called.
 		finishRun = true;
 	}
-
 	
 	/** 
 	* This method initializes the Time and ArrayList
@@ -64,7 +58,7 @@ public class Chronotimer {
 	/** 
 	* Adds the total amount of channels to the class 
 	* 
-	* @version 1 - 02/26/17
+	* @version 1 - 02/28/17
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void setEvent(String eventType){
@@ -72,18 +66,19 @@ public class Chronotimer {
 			channels.add(new Channel(true,time));
 			channels.add(new Channel(true,time));
 		}
-		
 	}
 	
 	
 	/** 
+	* Calls the Time class to set the time if commands are 
+	* input from a file.
 	* 
-	* 
-	* @version 1 - 02/26/17
-	* @author Matthew Buchanan and Rylie Buehrig
+	* @version 1 - 02/28/17
+	* @author Rylie Buehrig
 	*/
-	public void setTime(){
-		//Nothing happening for now.
+	public void setTime(String timeStamp){
+		long timeLong = time.parseMilli(timeStamp);
+		time.start(timeLong);
 	}
 
 
@@ -143,7 +138,7 @@ public class Chronotimer {
 			if (racerTimes.get(i) != null) {
 				if (racerTimes.get(i) != ((long) -1)){
 					System.out.println("Racer: " + racerNums.get(i));
-					System.out.println("Total Time: " + racerTimes.get(i) + "\n");
+					System.out.println("Total Time: " + parseTime(racerTimes.get(i)) + "\n");
 				}
 				else{
 					System.out.println("Racer: " + racerNums.get(i));
@@ -157,6 +152,26 @@ public class Chronotimer {
 		}
 	}
 	
+	
+	/**
+	 * Method takes the racer's total time, gets the hours, minutes, seconds, 
+	 * and milliseconds from it and returns that in a formatted string.
+	 * 
+	 * @param timeInMS A delta time (the racer's total time in milliseconds).
+	 * @return
+	 */
+	public String parseTime(long timeInMS){
+		long currentTime = timeInMS;
+		
+		int hour = (int) (currentTime / (60*60*1000));
+		currentTime = currentTime - hour*(60*60*1000);
+		int minute = (int) (currentTime / (60*1000));
+		currentTime = currentTime - minute*(60*1000);
+		int second = (int) (currentTime / 1000);
+		currentTime = currentTime - second*(1000);
+		
+		return (hour + ":" + minute + ":" + second + "." + currentTime);
+	}
 		
 	/** 
 	* This method will create a new run by clearing all 
@@ -184,7 +199,7 @@ public class Chronotimer {
 	*/
 	public void endRun(){
 		finishRun = true;
-		//save current data?
+		//save current data --> Sprint 2
 	}
 	
 	
@@ -197,7 +212,6 @@ public class Chronotimer {
 	*/
 	public void DNF(){
 		if (on) time.dnf();
-		//should we change the channel type?
 	}
 
 	
