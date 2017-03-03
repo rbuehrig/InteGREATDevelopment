@@ -157,8 +157,9 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void print(){
-		if (on && eventSet && newRunCalled)	
+		if (on && eventSet && newRunCalled)	{
 			LinkedList<Long> racerTimes = time.getTimes();
+		
 			//int totalNumRacers = racerTimes.size();
 		
 			for (int i = 0; i < racerNums.size(); i++){
@@ -179,7 +180,8 @@ public class Chronotimer {
 				}
 			}
 		}
-	}
+		}
+	
 	
 	
 	/**
