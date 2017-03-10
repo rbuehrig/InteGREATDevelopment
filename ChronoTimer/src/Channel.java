@@ -1,4 +1,12 @@
-
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//Authors: Phil
+//
+//
+//Description: Channel object.
+//
+//////////////////////////////////////////
 public class Channel {
 	private boolean armed;
 	private boolean type;

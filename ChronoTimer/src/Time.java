@@ -3,6 +3,15 @@ import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//Authors: Phil
+//
+//
+//Description: Time object.
+//
+//////////////////////////////////////////
 
 public class Time {
 	private LinkedList<Long> startTimes;

@@ -16,13 +16,20 @@ public class Chronotimer {
 	//This time variable will serve as the keeper of 
 	//racer's start and finish times for reference.
 	private Time time;
+	private Printer printer;
+	
+	//For interfacing with the "directory"
+	private DirectoryProxy dp = new DirectoryProxy();
 	
 	//A queue to keep track of each racer's number
 	//in order. Implemented as an ArrayList for now.
-	ArrayList<Integer> racerNums;
+	private ArrayList<Integer> racerNums;
 	
+	//To be used to store racer data for printing or saving
+	private ArrayList<Racer> racers;
+		
 	//Keeps track of channels we need to use in the race.
-	ArrayList<Channel> channels;
+	private ArrayList<Channel> channels;
 	private final int NUM_CHANNELS = 8;
 	
 	//Boolean to keep track of if the system has been turned on.
@@ -43,6 +50,7 @@ public class Chronotimer {
 	 * @author Philip Kocol
 	 */
 	public Chronotimer(){
+		printer = new Printer();		
 		racerNums = new ArrayList<Integer>();
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
 		
@@ -60,8 +68,8 @@ public class Chronotimer {
 	 * 
 	 * @author Philip Kocol
 	 */
-	private void initChannels(){
-		for(int i = 0; i <= NUM_CHANNELS; i++){
+	private void initChannels(int numChans){
+		for(int i = 0; i <= numChans; i++){
 			if(i%2 == 0){
 				channels.add(new Channel(true, time));
 			}
@@ -109,7 +117,9 @@ public class Chronotimer {
 		
 		//Add two new channels to array list
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
-		initChannels();
+		
+		//does this when event command is called
+		//initChannels();
 	}
 	
 	
@@ -123,8 +133,12 @@ public class Chronotimer {
 		if (on){
 			switch (eventType){
 				case "IND":
-					channels.get(0).setType(true);
-					channels.get(1).setType(false);;
+					initChannels(2);
+					eventSet = true;
+					break;
+				
+				case "PARIND":
+					initChannels(4);
 					eventSet = true;
 					break;
 			}
@@ -191,18 +205,16 @@ public class Chronotimer {
 	* racers that finished. 
 	* 
 	* @precondition racerNums ArrayList must not be empty.
-	* @note Method may be revised to be more efficient
-	*       for higher number of racers.
 	* @version 1 - 02/27/17
 	* @author Rylie Buehrig
 	*/
 	public void print(){
 		if (on && eventSet && newRunCalled)	{
 			LinkedList<Long> racerTimes = time.getTimes();
-			//int totalNumRacers = racerTimes.size();
-		
+			
+			createRacerQueue();
+			
 			for (int i = 0; i < racerNums.size(); i++){
-				//Make sure DNF flag was not set
 				if (i < racerTimes.size()) {
 					if (racerTimes.get(i) != ((long) -1)){
 						System.out.println("Racer: " + racerNums.get(i));
@@ -217,6 +229,23 @@ public class Chronotimer {
 					System.out.println("Racer: " + racerNums.get(i));
 					System.out.println("Did not start the race.\n");
 				}
+			}
+		}
+	}
+	
+	
+	/**
+	 * Helper method that initializes the queue of Racer objects 
+	 * and adds Racer objects with numbers and times.
+	 * 
+	 */
+	private void createRacerQueue(){
+		if (on && eventSet && newRunCalled)	{
+			LinkedList<Long> racerTimes = time.getTimes();
+
+			racers = new ArrayList<Racer>(racerNums.size());
+			for (int i = 0; i < racerNums.size(); i++){
+				racers.add(new Racer(racerNums.get(i),parseTime(racerTimes.get(i)),racerTimes.get(i)));
 			}
 		}
 	}
@@ -257,18 +286,20 @@ public class Chronotimer {
 	}
 	
 	
-	//Do we need to store previous run data somewhere? 
-	//Or will simulator class do this?
 	/** 
 	* This method will enable boolean so that NEWRUN command
-	* can be called 
+	* can be called. 
 	* 
 	* @version 1 - 02/27/17
 	* @author Rylie Buehrig
 	*/
 	public void endRun(){
-		if (newRunCalled) newRunCalled = false;
-		//save current data --> Sprint 2
+		if (newRunCalled) {
+			newRunCalled = false;
+			
+			createRacerQueue();
+			dp.add(racers);
+		}
 	}
 	
 	
@@ -321,13 +352,15 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void trigger(int channelNum){
-		if (on && newRunCalled && eventSet && (time.getTimes().size() <= racerNums.size())) {
+		//Avoids the issue of having more racer start times than racer numbers
+		if (on && newRunCalled && eventSet && (time.getNumTimes() <= racerNums.size())) {
 			channels.get(channelNum - 1).trigger();
 		}
 	}
 	
 	public void trigger(int channelNum, String customTime){
-		if (on && newRunCalled && eventSet && (time.getTimes().size() <= racerNums.size())) {
+		//Avoids the issue of having more racer start times than racer numbers
+		if (on && newRunCalled && eventSet && (time.getNumTimes() <= racerNums.size())) {
 			channels.get(channelNum - 1).trigger(time.parseMilli(customTime));
 		}
 	}
