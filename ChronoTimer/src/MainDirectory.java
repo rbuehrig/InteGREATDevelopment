@@ -26,13 +26,13 @@ public class MainDirectory implements DirectoryInterface {
 
 	@Override
 	public void print() {
-		ArrayList<int> dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
+		ArrayList<Racer> dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
+		
 		//if(dir.isEmpty()){
 		//	System.out.println("*Empty Directory*");
 		//}
-		else{
-			printer.printToFile(dir);
-		}
+		printer.print(dir,false);
+		
 	}
 
 	@Override
