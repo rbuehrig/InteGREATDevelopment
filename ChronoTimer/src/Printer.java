@@ -18,7 +18,7 @@ public class Printer {
 	 */
 	public void print(ArrayList<Racer> racers, boolean outputSource) {
 		String fileName = "Race" + raceNumber +".txt";
-		
+
 		//Print to console
 		if (outputSource){
 			output = System.out;
@@ -38,30 +38,9 @@ public class Printer {
 		output.println("----------------------------------------");
 
 		for (int i = 0; i < racers.size(); i++){
-			if (racers.get(i).raceTimeLong != ((long) -1)){
-				output.println("Racer: " + racers.get(i).number);
-				output.println("Time: " + racers.get(i).raceTimeString);
-				output.println("----------------------------------------");
-			}
-			else{
-				output.println("Racer: " + racers.get(i).number);
-				output.println("Did not finish the race.\n");
-				output.println("----------------------------------------");
-			}
-
-
-			/*else{
-				System.out.println("Racer: " + racerNums.get(i));
-				System.out.println("Did not start the race.\n");
-			}*/
+			output.println(racers.get(i).toString());
+			output.println("----------------------------------------");
 		}
 		raceNumber++;
 	}
-
-
-
-//	for (Racer r: dir) {
-//		System.out.println(r.toString());
-//	}
-	
 }

@@ -10,6 +10,14 @@ public class Racer {
 	}
 	
 	public String toString(){
-		return "Racer: " + number + "";
+		//if racer did not finish race
+		if (raceTimeLong == ((long) -1)) {
+			return "Racer: " + number + "\nTime: Did not finish race.";
+		}
+		
+		//normal race finish
+		return "Racer: " + number + "\nTime: " + raceTimeString;
+		
+		//possible case for if a racer did not start?
 	}
 }

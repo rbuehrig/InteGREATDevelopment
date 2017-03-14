@@ -214,22 +214,8 @@ public class Chronotimer {
 			
 			createRacerQueue();
 			
-			for (int i = 0; i < racerNums.size(); i++){
-				if (i < racerTimes.size()) {
-					if (racerTimes.get(i) != ((long) -1)){
-						System.out.println("Racer: " + racerNums.get(i));
-						System.out.println("Total Time: " + parseTime(racerTimes.get(i)) + "\n");
-					}
-					else{
-						System.out.println("Racer: " + racerNums.get(i));
-						System.out.println("Did not finish the race.\n");
-					}
-				}
-				else {
-					System.out.println("Racer: " + racerNums.get(i));
-					System.out.println("Did not start the race.\n");
-				}
-			}
+			dp.add(racers);
+			dp.print();
 		}
 	}
 	
