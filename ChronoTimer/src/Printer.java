@@ -22,7 +22,6 @@ public class Printer {
 		//Print to console
 		if (outputSource){
 			output = System.out;
-
 		}
 		//Print to file
 		else{
@@ -37,8 +36,8 @@ public class Printer {
 		output.println("             RACE " + raceNumber + " RESULTS             " + "\n");
 		output.println("----------------------------------------");
 
-		for (int i = 0; i < racers.size(); i++){
-			output.println(racers.get(i).toString());
+		for (Racer r: racers){
+			output.println(r.toString());
 			output.println("----------------------------------------");
 		}
 		raceNumber++;

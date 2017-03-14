@@ -25,13 +25,14 @@ public class MainDirectory implements DirectoryInterface {
 	}
 
 	@Override
-	public void print() {
+	public void print(String outputSource) {
 		ArrayList<Racer> dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
 		
-		//if(dir.isEmpty()){
-		//	System.out.println("*Empty Directory*");
-		//}
-		printer.print(dir,false);
+		if(dir.isEmpty()){
+			System.out.println("No Racers in queue.");
+		}
+		if (outputSource.equals("file")) {printer.print(dir,false);}
+		else {printer.print(dir,true);}
 		
 	}
 

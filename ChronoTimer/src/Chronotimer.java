@@ -126,7 +126,7 @@ public class Chronotimer {
 	/** 
 	* Adds the total amount of channels to the class 
 	* 
-	* @version 1 - 02/28/17
+	* @version 1 - 03/10/17
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void setEvent(String eventType){
@@ -215,10 +215,46 @@ public class Chronotimer {
 			createRacerQueue();
 			
 			dp.add(racers);
-			dp.print();
+			
+			//print will print results to console
+			dp.print("console");
+		}
+	}
+
+	
+	/** 
+	* This method will create a new run by clearing all 
+	* data structures.
+	* 
+	* @version 1 - 02/27/17
+	* @author Rylie Buehrig
+	*/
+	public void newRun(){
+		if (on) {
+			reset();
+			newRunCalled = true;
 		}
 	}
 	
+	
+	/** 
+	* This method will enable boolean so that NEWRUN command
+	* can be called. 
+	* 
+	* @version 1 - 02/27/17
+	* @author Rylie Buehrig
+	*/
+	public void endRun(){
+		if (newRunCalled) {
+			newRunCalled = false;
+			
+			createRacerQueue();
+			dp.add(racers);
+			
+			//end run saves run data to a file
+			dp.print("file");
+		}
+	}
 	
 	/**
 	 * Helper method that initializes the queue of Racer objects 
@@ -256,38 +292,7 @@ public class Chronotimer {
 		
 		return (hour + ":" + minute + ":" + second + "." + currentTime);
 	}
-		
-	/** 
-	* This method will create a new run by clearing all 
-	* data structures.
-	* 
-	* @version 1 - 02/27/17
-	* @author Rylie Buehrig
-	*/
-	public void newRun(){
-		if (on) {
-			reset();
-			newRunCalled = true;
-		}
-	}
-	
-	
-	/** 
-	* This method will enable boolean so that NEWRUN command
-	* can be called. 
-	* 
-	* @version 1 - 02/27/17
-	* @author Rylie Buehrig
-	*/
-	public void endRun(){
-		if (newRunCalled) {
-			newRunCalled = false;
 			
-			createRacerQueue();
-			dp.add(racers);
-		}
-	}
-	
 	
 	/** 
 	* This method will call the time DNF method to set 
@@ -340,6 +345,9 @@ public class Chronotimer {
 	public void trigger(int channelNum){
 		//Avoids the issue of having more racer start times than racer numbers
 		if (on && newRunCalled && eventSet && (time.getNumTimes() <= racerNums.size())) {
+			//*somewhere we need to see if the triggered channel is odd or even 
+			//*because start and stop methods right now trigger specifically channels
+			//*1 and 2
 			channels.get(channelNum - 1).trigger();
 		}
 	}
