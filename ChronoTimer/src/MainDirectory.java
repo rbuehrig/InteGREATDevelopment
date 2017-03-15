@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 public class MainDirectory implements DirectoryInterface {
 	
 	String directory;
+	ArrayList<Racer> dir;
 	Printer printer;
 	Gson g;
 	
@@ -26,7 +27,7 @@ public class MainDirectory implements DirectoryInterface {
 
 	@Override
 	public void print(String outputSource) {
-		ArrayList<Racer> dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
+		dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
 		
 		if(dir.isEmpty()){
 			System.out.println("No Racers in queue.");

@@ -15,8 +15,9 @@ import java.util.LinkedList;
 public class Chronotimer {
 	//This time variable will serve as the keeper of 
 	//racer's start and finish times for reference.
-	private Time time;
 	private Printer printer;
+	
+	private LinkedList <Time> times;
 	
 	//For interfacing with the "directory"
 	private DirectoryProxy dp = new DirectoryProxy();
@@ -52,7 +53,7 @@ public class Chronotimer {
 	public Chronotimer(){
 		printer = new Printer();		
 		racerNums = new ArrayList<Integer>();
-		channels = new ArrayList<Channel>(NUM_CHANNELS);
+		channels = new ArrayList<Channel>();
 		
 		on = false;
 		newRunCalled = false;
@@ -69,13 +70,10 @@ public class Chronotimer {
 	 * @author Philip Kocol
 	 */
 	private void initChannels(int numChans){
-		for(int i = 0; i <= numChans; i++){
-			if(i%2 == 0){
-				channels.add(new Channel(true, time));
-			}
-			else{
-				channels.add(new Channel(false, time));
-			}
+		for(int i = 0; i <= numChans; i+=2){
+				times.add(new Time());
+				channels.add(new Channel(true, times.peekLast()));
+				channels.add(new Channel(false, times.peekLast()));
 		}
 	}
 	
@@ -253,6 +251,8 @@ public class Chronotimer {
 			
 			//end run saves run data to a file
 			dp.print("file");
+			
+			dp.clear();
 		}
 	}
 	
@@ -334,6 +334,10 @@ public class Chronotimer {
 		}
 	}
 	
+	//TODO to check if the channel exists and is active
+	
+	//TODO make sure a finish time has a corresponding start time.
+	//If you trigger an odd channel 
 
 	/** 
 	* This method will call the channel's trigger method.
