@@ -12,11 +12,8 @@ import java.util.LinkedList;
 //
 //////////////////////////////////////////
 
-public class Chronotimer {
-	//This time variable will serve as the keeper of 
-	//racer's start and finish times for reference.
-	private Printer printer;
-	
+public class Chronotimer {	
+	//Keep track of multiple times in the case of parallel races
 	private LinkedList <Time> times;
 	
 	//For interfacing with the "directory"
@@ -37,12 +34,19 @@ public class Chronotimer {
 	protected boolean on;
 	
 	private boolean newRunCalled;
-	//Keep track of EVENT is called
+	
+	//Keep track of if EVENT is called
 	private boolean eventSet;
 	
-	//keep track of how many times toggle is called
-	private int toggleCalled;
+	//keep track of the current racer
+	private int currentRacerNum;
+	
+	//keep track of the current trigger number
 	private int triggerCalled;
+	
+	//keep track of which time object a start was just added to
+	//Default object is zero (i.e. for IND races)
+	private int timeObjNum = 0;
 	
 	
 	/**
@@ -51,7 +55,6 @@ public class Chronotimer {
 	 * @author Philip Kocol
 	 */
 	public Chronotimer(){
-		printer = new Printer();		
 		racerNums = new ArrayList<Integer>();
 		channels = new ArrayList<Channel>();
 		
@@ -59,7 +62,6 @@ public class Chronotimer {
 		newRunCalled = false;
 		eventSet = false;
 		triggerCalled = 0;
-		toggleCalled = 0;	
 	}
 	
 	/**
@@ -71,9 +73,9 @@ public class Chronotimer {
 	 */
 	private void initChannels(int numChans){
 		for(int i = 0; i <= numChans; i+=2){
-				times.add(new Time());
-				channels.add(new Channel(true, times.peekLast()));
-				channels.add(new Channel(false, times.peekLast()));
+			times.add(new Time());
+			channels.add(new Channel(true, times.peekLast()));
+			channels.add(new Channel(false, times.peekLast()));
 		}
 	}
 	
@@ -97,8 +99,6 @@ public class Chronotimer {
 		//Allows for a newRun to be called.
 		newRunCalled = false;
 		eventSet = false;
-		triggerCalled = 0;
-		toggleCalled = 0;
 	}
 	
 	/** 
@@ -110,14 +110,12 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void reset(){
-		time = new Time();
+		times = new LinkedList<Time>();
 		racerNums = new ArrayList<Integer>();
 		
 		//Add two new channels to array list
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
-		
-		//does this when event command is called
-		//initChannels();
+		triggerCalled = 0;
 	}
 	
 	
@@ -148,13 +146,22 @@ public class Chronotimer {
 	* Calls the Time class to set the time if commands are 
 	* input from a file.
 	* 
+	* @precondition setEvent must be called before setting time,
+	*	 so that there is at least one time created.
 	* @version 1 - 02/28/17
 	* @author Rylie Buehrig
 	*/
 	public void setTime(String timeStamp){
-		if (on){
-			long timeLong = time.parseMilli(timeStamp);
-			time.start(timeLong);
+		long timeLong = times.get(1).parseMilli(timeStamp);
+		
+		//This could be wrong
+		//Assumes both Time objects will get the same time for reference
+		if (on && eventSet && (times.size() > 1)){
+			times.get(1).start(timeLong);
+			times.get(2).start(timeLong);
+		}
+		else if (on && eventSet && (times.size() == 1)){
+			times.get(1).start(timeLong);
 		}
 	}
 
@@ -199,28 +206,6 @@ public class Chronotimer {
 
 	
 	/** 
-	* This method will print the delta time of the 
-	* racers that finished. 
-	* 
-	* @precondition racerNums ArrayList must not be empty.
-	* @version 1 - 02/27/17
-	* @author Rylie Buehrig
-	*/
-	public void print(){
-		if (on && eventSet && newRunCalled)	{
-			LinkedList<Long> racerTimes = time.getTimes();
-			
-			createRacerQueue();
-			
-			dp.add(racers);
-			
-			//print will print results to console
-			dp.print("console");
-		}
-	}
-
-	
-	/** 
 	* This method will create a new run by clearing all 
 	* data structures.
 	* 
@@ -236,6 +221,24 @@ public class Chronotimer {
 	
 	
 	/** 
+	* This method will print the delta time of the 
+	* racers that finished. 
+	* 
+	* @precondition racerNums ArrayList must not be empty.
+	* @version 1 - 02/27/17
+	* @author Rylie Buehrig
+	*/
+	public void print(){
+		if (on && eventSet && newRunCalled)	{
+			createRacerQueue();
+			dp.add(racers);
+			//print will print results to console
+			dp.print("console");
+		}
+	}
+	
+	
+	/** 
 	* This method will enable boolean so that NEWRUN command
 	* can be called. 
 	* 
@@ -244,15 +247,13 @@ public class Chronotimer {
 	*/
 	public void endRun(){
 		if (newRunCalled) {
-			newRunCalled = false;
-			
+			newRunCalled = false;	
 			createRacerQueue();
-			dp.add(racers);
-			
+			dp.add(racers);	
 			//end run saves run data to a file
 			dp.print("file");
-			
 			dp.clear();
+			
 		}
 	}
 	
@@ -263,11 +264,29 @@ public class Chronotimer {
 	 */
 	private void createRacerQueue(){
 		if (on && eventSet && newRunCalled)	{
-			LinkedList<Long> racerTimes = time.getTimes();
+			LinkedList<Long> racerTimes1, racerTimes2;
+			//only one time object created (i.e. IND race)
+			if (times.size() == 1){
+				racerTimes1 = times.get(1).getTimes();
+			}
+			//two time objects created (i.e PAR race)
+			else if (times.size() == 2) {
+				racerTimes1 = times.get(1).getTimes();
+				racerTimes2 = times.get(2).getTimes();
+			}
 
 			racers = new ArrayList<Racer>(racerNums.size());
+			long tempNum;
 			for (int i = 0; i < racerNums.size(); i++){
-				racers.add(new Racer(racerNums.get(i),parseTime(racerTimes.get(i)),racerTimes.get(i)));
+				//look through the first time object for the racer number's time
+				if ((tempNum = times.get(1).racerNums.get(i)) == racerNums.get(i)){
+					racers.add(new Racer(racerNums.get(i),parseTime(tempNum),tempNum));
+				}
+				
+				//look through the second time object for the racer number's time
+				else if ((times.get(2) != null) && ((tempNum = times.get(2).racerNums.get(i)) == racerNums.get(i))){
+					racers.add(new Racer(racerNums.get(i),parseTime(tempNum),tempNum));
+				}	
 			}
 		}
 	}
@@ -302,7 +321,11 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void DNF(){
-		if (on && eventSet && newRunCalled) time.dnf();
+		//TODO QUESTION: is a number passed with DNF command to denote which racer in a 
+		//parallel run did not finish?
+		//For now, I just have a variable to keep track of the which time object was last
+		//added to.
+		if (on && eventSet && newRunCalled) times.get(timeObjNum).dnf();
 	}
 
 	
@@ -315,7 +338,7 @@ public class Chronotimer {
 	*/
 	public void cancel(){
 		if (on) {
-			time.cancel();
+			times.get(timeObjNum).cancel();
 		}
 	}
 
@@ -330,11 +353,10 @@ public class Chronotimer {
 	public void toggle(int channelNum){
 		if (on && eventSet && newRunCalled) {
 			channels.get(channelNum - 1).toggle();
-			toggleCalled++;
 		}
 	}
 	
-	//TODO to check if the channel exists and is active
+	//TODO check if the channel exists and is active
 	
 	//TODO make sure a finish time has a corresponding start time.
 	//If you trigger an odd channel 
@@ -343,23 +365,64 @@ public class Chronotimer {
 	* This method will call the channel's trigger method.
 	* Sets channel as either a "start" or "end" channel.
 	* 
+	* @param channelNum 
 	* @version 1 - 02/26/17
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void trigger(int channelNum){
-		//Avoids the issue of having more racer start times than racer numbers
-		if (on && newRunCalled && eventSet && (time.getNumTimes() <= racerNums.size())) {
+		//Need to somehow denote which racer corresponds to which time object and in which order
+		if (on && newRunCalled && eventSet) {	
 			//*somewhere we need to see if the triggered channel is odd or even 
 			//*because start and stop methods right now trigger specifically channels
 			//*1 and 2
-			channels.get(channelNum - 1).trigger();
+			
+			if (channelNum == 1) {
+				times.get(1).start(channels.get(channelNum - 1).trigger());
+				times.get(1).racerNums.add(racerNums.get(triggerCalled));
+				triggerCalled++;
+			}
+			if (channelNum == 2) {
+				times.get(1).finish(channels.get(channelNum - 1).trigger());
+			}
+			if (channelNum == 3) {
+				times.get(2).start(channels.get(channelNum - 1).trigger());
+				times.get(2).racerNums.add(racerNums.get(triggerCalled));
+				triggerCalled++;
+			}
+			if (channelNum == 4) {
+				times.get(2).finish(channels.get(channelNum - 1).trigger());
+			}	
 		}
 	}
 	
+	/**
+	 * Repeat of trigger method for file I/O
+	 * 
+	 * @param channelNum
+	 * @param customTime
+	 */
 	public void trigger(int channelNum, String customTime){
 		//Avoids the issue of having more racer start times than racer numbers
-		if (on && newRunCalled && eventSet && (time.getNumTimes() <= racerNums.size())) {
-			channels.get(channelNum - 1).trigger(time.parseMilli(customTime));
+		if (on && newRunCalled && eventSet) {
+			long tempTime = times.get(1).parseMilli(customTime);
+	
+			if (channelNum == 1) {
+				times.get(1).start(channels.get(channelNum - 1).trigger(tempTime));
+				times.get(1).racerNums.add(racerNums.get(triggerCalled));
+				triggerCalled++;
+			}
+			if (channelNum == 2) {
+				times.get(1).finish(channels.get(channelNum - 1).trigger(tempTime));
+			}
+			if (channelNum == 3) {
+				times.get(2).start(channels.get(channelNum - 1).trigger(tempTime));
+				times.get(2).racerNums.add(racerNums.get(triggerCalled));
+				triggerCalled++;
+				timeObjNum = 1;
+			}
+			if (channelNum == 4) {
+				times.get(2).finish(channels.get(channelNum - 1).trigger(tempTime));
+			}
 		}
 	}
 }

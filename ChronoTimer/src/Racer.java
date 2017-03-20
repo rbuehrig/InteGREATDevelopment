@@ -1,5 +1,6 @@
 public class Racer {
 	protected int number;
+	
 	protected String raceTimeString;
 	protected long  raceTimeLong;
 	

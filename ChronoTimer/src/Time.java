@@ -1,4 +1,5 @@
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
@@ -16,10 +17,12 @@ import java.util.Queue;
 public class Time {
 	private LinkedList<Long> startTimes;
 	private LinkedList<Long> racerTimes;
+	protected ArrayList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
 		racerTimes = new LinkedList<Long>();
+		racerNums = new ArrayList<Integer>();
 	}
 	
 	/**
@@ -145,7 +148,6 @@ public class Time {
 		
 		long parsedTime = (hour * 3600000) + (minute * 60000) + (second1 * 1000) + (second2 * 10);
 		return parsedTime;
-		
 	}
 	
 
