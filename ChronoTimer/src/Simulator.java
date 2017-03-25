@@ -27,13 +27,12 @@ public class Simulator {
 		Scanner scan;
 		
 		try{
-			scan = new Scanner(new File("no"));
+			scan = new Scanner(new File("CTS2R1.txt"));
 		}
 		catch(FileNotFoundException e){
 			System.out.println("File not found. Please use the console.");
 			scan = new Scanner(System.in);
-		}
-		
+		}		
 		
 		String input;
 		String timeStamp;
@@ -97,7 +96,7 @@ public class Simulator {
 					 * 
 					 * This will need to be modified when we add new event types
 					 */
-					if(trigger <= 2){
+					if(trigger <= 4){
 						if(cmdFile){
 							timmy.trigger(trigger, timeStamp);
 						}

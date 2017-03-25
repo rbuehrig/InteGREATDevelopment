@@ -18,8 +18,8 @@ public class DirectoryProxy implements DirectoryInterface{
 	}
 
 	@Override
-	public void print(String outputSource) {
-		d.print(outputSource);
+	public void print(String outputSource,int raceNum) {
+		d.print(outputSource,raceNum);
 	}
 
 	@Override

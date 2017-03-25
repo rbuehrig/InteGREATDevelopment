@@ -16,12 +16,14 @@ import java.util.Queue;
 
 public class Time {
 	private LinkedList<Long> startTimes;
-	private LinkedList<Long> racerTimes;
+	protected ArrayList<Long> racerTimes;
+	
+	//Keep track of which racer corresponds to time object
 	protected ArrayList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new LinkedList<Long>();
+		racerTimes = new ArrayList<Long>();
 		racerNums = new ArrayList<Integer>();
 	}
 	
@@ -82,13 +84,15 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(long finish){
-		if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
+		//if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
 		
-		long start = startTimes.pollFirst();
-		long time = finish - start;
-		racerTimes.add(time);
-		return time;
-		
+		if (!startTimes.isEmpty()){
+			long start = startTimes.pollFirst();
+			long time = finish - start;
+			racerTimes.add(time);
+			return time;
+		}
+		return 0;
 	}
 	
 	/**
@@ -125,7 +129,7 @@ public class Time {
 	 * 
 	 * @return LinkedList of racer times
 	 */
-	public LinkedList<Long> getTimes(){
+	public ArrayList<Long> getTimes(){
 		return racerTimes;
 	}
 	

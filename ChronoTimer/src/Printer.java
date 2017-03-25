@@ -4,7 +4,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Printer {
-	int raceNumber = 1;
 	PrintStream output;
 
 	/**
@@ -16,8 +15,8 @@ public class Printer {
 	 * or to file (false)
 	 * 
 	 */
-	public void print(ArrayList<Racer> racers, boolean outputSource) {
-		String fileName = "Race" + raceNumber +".txt";
+	public void print(ArrayList<Racer> racers, boolean outputSource,int raceNum) {
+		String fileName = "Race" + raceNum +".txt";
 
 		//Print to console
 		if (outputSource){
@@ -33,13 +32,12 @@ public class Printer {
 			}
 		}
 
-		output.println("             RACE " + raceNumber + " RESULTS             " + "\n");
-		output.println("----------------------------------------");
+		output.println("\n" + "          RACE " + raceNum + " RESULTS          ");
+		output.println("----------------------------------");
 
 		for (Racer r: racers){
 			output.println(r.toString());
-			output.println("----------------------------------------");
+			output.println("----------------------------------" + "\n");
 		}
-		raceNumber++;
 	}
 }

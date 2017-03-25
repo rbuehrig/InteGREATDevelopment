@@ -26,14 +26,14 @@ public class MainDirectory implements DirectoryInterface {
 	}
 
 	@Override
-	public void print(String outputSource) {
+	public void print(String outputSource,int raceNum) {
 		dir = (g.fromJson(directory, new TypeToken<Collection<Racer>>(){}.getType()));
 		
 		if(dir.isEmpty()){
 			System.out.println("No Racers in queue.");
 		}
-		if (outputSource.equals("file")) {printer.print(dir,false);}
-		else {printer.print(dir,true);}
+		if (outputSource.equals("file")) {printer.print(dir,false,raceNum);}
+		else {printer.print(dir,true,raceNum);}
 		
 	}
 

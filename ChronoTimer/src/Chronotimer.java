@@ -38,17 +38,14 @@ public class Chronotimer {
 	//Keep track of if EVENT is called
 	private boolean eventSet;
 	
-	//keep track of the current racer
-	private int currentRacerNum;
-	
 	//keep track of the current trigger number
-	private int triggerCalled;
+	private int whichRacer;
 	
 	//keep track of which time object a start was just added to
 	//Default object is zero (i.e. for IND races)
 	private int timeObjNum = 0;
 	
-	
+	private int raceNum = 1;
 	/**
 	 * Constructor
 	 * 
@@ -61,7 +58,7 @@ public class Chronotimer {
 		on = false;
 		newRunCalled = false;
 		eventSet = false;
-		triggerCalled = 0;
+		whichRacer = 0;
 	}
 	
 	/**
@@ -115,7 +112,7 @@ public class Chronotimer {
 		
 		//Add two new channels to array list
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
-		triggerCalled = 0;
+		whichRacer = 0;
 	}
 	
 	
@@ -152,16 +149,16 @@ public class Chronotimer {
 	* @author Rylie Buehrig
 	*/
 	public void setTime(String timeStamp){
-		long timeLong = times.get(1).parseMilli(timeStamp);
+		long timeLong = times.get(0).parseMilli(timeStamp);
 		
 		//This could be wrong
 		//Assumes both Time objects will get the same time for reference
 		if (on && eventSet && (times.size() > 1)){
+			times.get(0).start(timeLong);
 			times.get(1).start(timeLong);
-			times.get(2).start(timeLong);
 		}
 		else if (on && eventSet && (times.size() == 1)){
-			times.get(1).start(timeLong);
+			times.get(0).start(timeLong);
 		}
 	}
 
@@ -214,7 +211,6 @@ public class Chronotimer {
 	*/
 	public void newRun(){
 		if (on) {
-			reset();
 			newRunCalled = true;
 		}
 	}
@@ -233,7 +229,7 @@ public class Chronotimer {
 			createRacerQueue();
 			dp.add(racers);
 			//print will print results to console
-			dp.print("console");
+			dp.print("console",raceNum);
 		}
 	}
 	
@@ -251,9 +247,10 @@ public class Chronotimer {
 			createRacerQueue();
 			dp.add(racers);	
 			//end run saves run data to a file
-			dp.print("file");
+			dp.print("file",raceNum);
 			dp.clear();
-			
+			raceNum++;
+			reset();
 		}
 	}
 	
@@ -264,29 +261,29 @@ public class Chronotimer {
 	 */
 	private void createRacerQueue(){
 		if (on && eventSet && newRunCalled)	{
-			LinkedList<Long> racerTimes1, racerTimes2;
-			//only one time object created (i.e. IND race)
-			if (times.size() == 1){
-				racerTimes1 = times.get(1).getTimes();
-			}
-			//two time objects created (i.e PAR race)
-			else if (times.size() == 2) {
-				racerTimes1 = times.get(1).getTimes();
-				racerTimes2 = times.get(2).getTimes();
-			}
-
 			racers = new ArrayList<Racer>(racerNums.size());
-			long tempNum;
-			for (int i = 0; i < racerNums.size(); i++){
-				//look through the first time object for the racer number's time
-				if ((tempNum = times.get(1).racerNums.get(i)) == racerNums.get(i)){
-					racers.add(new Racer(racerNums.get(i),parseTime(tempNum),tempNum));
+			long raceTime;						
+
+			for (int i = 0; i < racerNums.size(); i++){				
+				for (int j = 0; j < racerNums.size(); j++){
+					//look through the first time object for the racer number's time
+					if (j < (times.get(0).racerNums.size())){				
+						if (times.get(0).racerNums.get(j) == racerNums.get(i)){
+							raceTime = times.get(0).racerTimes.get(j);
+							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
+							break;
+						}
+					}
+					//look through the second time object for the racer number's time
+					if ((times.get(1) != null) && (j < (times.get(1).racerNums.size()))){				
+						if (times.get(1).racerNums.get(j) == racerNums.get(i)){
+							raceTime = times.get(1).racerTimes.get(j);
+							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
+							break;
+						}
+					}
+					//TODO Expand in the future to accommodate more time objects
 				}
-				
-				//look through the second time object for the racer number's time
-				else if ((times.get(2) != null) && ((tempNum = times.get(2).racerNums.get(i)) == racerNums.get(i))){
-					racers.add(new Racer(racerNums.get(i),parseTime(tempNum),tempNum));
-				}	
 			}
 		}
 	}
@@ -321,9 +318,7 @@ public class Chronotimer {
 	* @author Matthew Buchanan and Rylie Buehrig
 	*/
 	public void DNF(){
-		//TODO QUESTION: is a number passed with DNF command to denote which racer in a 
-		//parallel run did not finish?
-		//For now, I just have a variable to keep track of the which time object was last
+		//I just have a variable to keep track of the which time object was last
 		//added to.
 		if (on && eventSet && newRunCalled) times.get(timeObjNum).dnf();
 	}
@@ -339,6 +334,8 @@ public class Chronotimer {
 	public void cancel(){
 		if (on) {
 			times.get(timeObjNum).cancel();
+			times.get(0).racerNums.remove(times.get(0).racerNums.size() - 1);
+			whichRacer--;
 		}
 	}
 
@@ -371,26 +368,27 @@ public class Chronotimer {
 	*/
 	public void trigger(int channelNum){
 		//Need to somehow denote which racer corresponds to which time object and in which order
-		if (on && newRunCalled && eventSet) {	
+		if (on && newRunCalled && eventSet){	
 			//*somewhere we need to see if the triggered channel is odd or even 
 			//*because start and stop methods right now trigger specifically channels
-			//*1 and 2
-			
-			if (channelNum == 1) {
-				times.get(1).start(channels.get(channelNum - 1).trigger());
-				times.get(1).racerNums.add(racerNums.get(triggerCalled));
-				triggerCalled++;
+			//*1 and 2			
+			if ((channels.get(0) != null) && channelNum == 1) {
+				channels.get(channelNum - 1).trigger(times.get(0));
+				times.get(0).racerNums.add(racerNums.get(whichRacer));
+				whichRacer++;
+				timeObjNum = 0;
 			}
-			if (channelNum == 2) {
-				times.get(1).finish(channels.get(channelNum - 1).trigger());
+			if ((channels.get(1) != null) && channelNum == 2) {
+				channels.get(channelNum - 1).trigger(times.get(0));
 			}
-			if (channelNum == 3) {
-				times.get(2).start(channels.get(channelNum - 1).trigger());
-				times.get(2).racerNums.add(racerNums.get(triggerCalled));
-				triggerCalled++;
+			if ((channels.get(2) != null) && channelNum == 3) {
+				channels.get(channelNum - 1).trigger(times.get(1));
+				times.get(1).racerNums.add(racerNums.get(whichRacer));
+				whichRacer++;
+				timeObjNum = 1;
 			}
-			if (channelNum == 4) {
-				times.get(2).finish(channels.get(channelNum - 1).trigger());
+			if ((channels.get(3) != null) && channelNum == 4) {
+				channels.get(channelNum - 1).trigger(times.get(1));
 			}	
 		}
 	}
@@ -404,24 +402,25 @@ public class Chronotimer {
 	public void trigger(int channelNum, String customTime){
 		//Avoids the issue of having more racer start times than racer numbers
 		if (on && newRunCalled && eventSet) {
-			long tempTime = times.get(1).parseMilli(customTime);
+			long tempTime = times.get(0).parseMilli(customTime);
 	
-			if (channelNum == 1) {
-				times.get(1).start(channels.get(channelNum - 1).trigger(tempTime));
-				times.get(1).racerNums.add(racerNums.get(triggerCalled));
-				triggerCalled++;
+			if ((channels.get(0) != null) && channelNum == 1) {
+				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
+				times.get(0).racerNums.add(racerNums.get(whichRacer));
+				whichRacer++;
+				timeObjNum = 0;
 			}
-			if (channelNum == 2) {
-				times.get(1).finish(channels.get(channelNum - 1).trigger(tempTime));
+			if ((channels.get(1) != null) && channelNum == 2) {
+				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
 			}
-			if (channelNum == 3) {
-				times.get(2).start(channels.get(channelNum - 1).trigger(tempTime));
-				times.get(2).racerNums.add(racerNums.get(triggerCalled));
-				triggerCalled++;
+			if ((channels.get(2) != null) && channelNum == 3) {
+				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
+				times.get(1).racerNums.add(racerNums.get(whichRacer));
+				whichRacer++;
 				timeObjNum = 1;
 			}
-			if (channelNum == 4) {
-				times.get(2).finish(channels.get(channelNum - 1).trigger(tempTime));
+			if ((channels.get(3) != null) && channelNum == 4) {
+				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
 			}
 		}
 	}
