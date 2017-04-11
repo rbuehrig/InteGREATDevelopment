@@ -16,6 +16,10 @@ public class Racer {
 			return "Racer: " + number + "\nTime: Did not finish race.";
 		}
 		
+		if (raceTimeLong == ((long) -2)) {
+			return "Racer: " + number + "\nTime: Did not start race.";
+		}
+		
 		//normal race finish
 		return "Racer: " + number + "\nTime: " + raceTimeString;
 		

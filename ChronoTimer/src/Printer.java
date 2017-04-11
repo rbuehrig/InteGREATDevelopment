@@ -37,7 +37,9 @@ public class Printer {
 
 		for (Racer r: racers){
 			output.println(r.toString());
-			output.println("----------------------------------" + "\n");
+			output.println("----------------------------------");
 		}
+		
+		output.println("");
 	}
 }

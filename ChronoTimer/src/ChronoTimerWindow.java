@@ -8,9 +8,16 @@ import javax.swing.JLabel;
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+import java.util.Scanner;
 import java.awt.event.ActionEvent;
 import java.awt.Insets;
 import java.awt.GridLayout;
+import java.awt.Image;
+
 import javax.swing.JSplitPane;
 import java.awt.FlowLayout;
 import javax.swing.SpringLayout;
@@ -19,46 +26,61 @@ import java.awt.Color;
 
 import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
+import javax.swing.border.EmptyBorder;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultHighlighter;
+import javax.swing.text.Highlighter;
 import javax.swing.JTextArea;
 import javax.swing.JRadioButton;
-
-
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JTextPane;
 import java.awt.Font;
 import javax.swing.JLayeredPane;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ChronoTimerWindow {
 	private JFrame frame;
-
+	int menuVersion = 0;
+    
+	static Chronotimer timmy = new Chronotimer();
+	static Date date;
+	static String timeStamp;
+	static int functionNumber;
+	static boolean cmdFile = false;
+	static Scanner scan;
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					ChronoTimerWindow window = new ChronoTimerWindow();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	//public static void main(String[] args) {
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					ChronoTimerWindow window = new ChronoTimerWindow();
+//					window.frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//	}
 
 	/**
 	 * Create the application.
+	 * @throws IOException 
 	 */
-	public ChronoTimerWindow() {
+	public ChronoTimerWindow() throws IOException {
 		initialize();
 	}
 
 	/**
 	 * Initialize the contents of the frame.
+	 * @throws IOException 
 	 */
-	private void initialize() {
+	private void initialize() throws IOException {
 		frame =  new JFrame();
 		frame.setBounds(100, 100, 709, 441);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -201,9 +223,44 @@ public class ChronoTimerWindow {
 		btnFunction.setBounds(34, 219, 117, 29);
 		frame.getContentPane().add(btnFunction);
 		
+		JLabel label_triDown = new JLabel();
+		label_triDown.setSize(30, 30);
+		label_triDown.setLocation(135, 251);
+		ImageIcon triDown = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingDown.png");
+		Image scaledTriDown = triDown.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
+		label_triDown.setIcon(new ImageIcon(scaledTriDown));
+		frame.getContentPane().add(label_triDown);
+		
+		JLabel label_triLeft = new JLabel();
+		
+		label_triLeft.setSize(30, 30);
+		label_triLeft.setLocation(44, 251);
+		ImageIcon triLeft = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingLeft.png");
+		Image scaledTriLeft = triLeft.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
+		label_triLeft.setIcon(new ImageIcon(scaledTriLeft));
+		frame.getContentPane().add(label_triLeft);
+		
+		JLabel label_triRight = new JLabel();
+		label_triRight.setSize(30, 30);
+		label_triRight.setLocation(86, 251);
+		ImageIcon triRight = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingRight.png");
+		Image scaledTriRight = triRight.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
+		label_triRight.setIcon(new ImageIcon(scaledTriRight));
+		frame.getContentPane().add(label_triRight);
+		
+		JLabel label_triUp = new JLabel();
+		label_triUp.setSize(30, 30);
+		label_triUp.setLocation(164, 251);
+		ImageIcon triUp = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingUp.png");
+		Image scaledTriUp = triUp.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
+		label_triUp.setIcon(new ImageIcon(scaledTriUp));
+		frame.getContentPane().add(label_triUp);
+		
 		JTextPane textPane = new JTextPane();
+		textPane.setFont(new Font("Lucida Grande", Font.PLAIN, 12));
+		textPane.setText(getRaceMenuLines(menuVersion));
 		textPane.setEditable(false);
-		textPane.setBounds(256, 214, 201, 173);
+		textPane.setBounds(242, 214, 215, 173);
 		frame.getContentPane().add(textPane);
 		
 		JLabel lblQueueRunning = new JLabel("Queue / Running / Final Time");
@@ -276,6 +333,389 @@ public class ChronoTimerWindow {
         textPane_1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         textPane_1.setBounds(6, 54, 129, 88);
         layeredPane.add(textPane_1);
+        
+        
+        label_triUp.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		if (functionNumber == 1){
+        			if(menuVersion - 1 >= 0) {
+        				menuVersion--;
+        				textPane.setText(getRaceMenuLines(menuVersion));
+        			}
+        		}
+        	}
+        });
+        
+        label_triDown.addMouseListener(new MouseAdapter() {
+        	@Override
+			public void mouseClicked(MouseEvent e) {        		
+        		if (functionNumber == 1){
+        			if (menuVersion + 1< 3) {
+        				menuVersion++;
+            			textPane.setText(getRaceMenuLines(menuVersion));
+        			}
+        		}
+        		
+        		else if (functionNumber == 2){
+        			
+        		}
+        		
+        		
+			}
+        });
+        
+		btnFunction.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				//menuVersion = 0 --> IND
+				//menuVersion = 1 --> PAR
+				//menuVersion = 2 -- > GRP
+				if (functionNumber == 1){
+					if (menuVersion == 0) {commands("EVENT IND",timmy);}
+					if (menuVersion == 1) {commands("EVENT PAR",timmy);}
+					if (menuVersion == 2) {commands("EVENT GRP",timmy);}
+					
+					commands("NEWRUN",timmy);
+					
+					textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter and key # to end.\n");
+				}
+				else if (functionNumber == 2){
+					String[] items = textPane.getText().split("\n");
+					if (!items[1].equals("")) {commands("NUM " + items[1],timmy);}
+					else {
+						textPane.setText("Waiting for race to start.");
+					}
+				}
+				else if (functionNumber == 3){}
+				
+				functionNumber++;
+			}
+		});
  
+		btnPower.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("POWER",timmy);
+			}
+		});
+		
+		button_12.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "1");
+			}
+		});
+		
+		button_11.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "2");
+			}
+		});
+		
+		button_10.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "3");
+			}
+		});
+		
+		button_9.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "4");
+			}
+		});
+		
+		btnNewButton_6.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "5");
+			}
+		});
+		
+		btnNewButton_5.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "6");
+			}
+		});
+		
+		btnNewButton_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "7");
+			}
+		});
+		
+		btnNewButton_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "8");
+			}
+		});
+		
+		btnNewButton_2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "9");
+			}
+		});
+		
+		btnJ.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "*");
+			}
+		});
+		
+		btnNewButton_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "0");
+			}
+		});
+		
+		btnNewButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				String currentText = textPane.getText();
+				textPane.setText(currentText + "#");
+			}
+		});
+		
+		radioButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 1",timmy);
+			}
+		});
+		
+		radioButton_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 2",timmy);
+			}
+		});
+		
+		radioButton_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 3",timmy);
+			}
+		});
+		
+		radioButton_5.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 4",timmy);
+			}
+		});
+		
+		radioButton_2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 5",timmy);
+			}
+		});
+		
+		radioButton_6.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 6",timmy);
+			}
+		});
+		
+		radioButton_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 7",timmy);
+			}
+		});
+		
+		radioButton_7.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TOG 8",timmy);
+			}
+		});
+		
+		button.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 1",timmy);
+			}
+		});
+		
+		button_4.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 2",timmy);
+			}
+		});
+		
+		button_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 3",timmy);
+			}
+		});
+		
+		button_5.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 4",timmy);
+			}
+		});
+		
+		button_2.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 5",timmy);
+			}
+		});
+		
+		button_6.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 6",timmy);
+			}
+		});
+		
+		button_3.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 7",timmy);
+			}
+		});
+
+		button_7.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("TRIG 8",timmy);
+			}
+		});
+		
+		btnPrinterPower.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				commands("PRINT",timmy);
+			}
+		});
+	}	
+	
+	private static String getRaceMenuLines(int menuSelection){
+		String [] lines = {"Welcome to Chronotimer 1009     \n                                                        "
+				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    ",
+				"Welcome to Chronotimer 1009     \n                                                        "
+				+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    ",
+				"Welcome to Chronotimer 1009     \n                                                        "
+				+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < "};
+		
+		return lines[menuSelection];
+	}
+	
+	
+	private static void commands(String input, Chronotimer timmy) {	
+		date = new Date();
+		timeStamp = date.toString().substring(11,19);
+		
+		
+		int channel;
+		int trigger;
+
+		String secondaryParam = "";
+		
+		if (input.contains(" ")){
+			String[] inputComponents = input.split(" ");
+			input = inputComponents[0];
+			secondaryParam = inputComponents[1];
+		}
+		
+		switch(input){
+		case "POWER":
+			timmy.powerToggle();
+			break;
+		case "EXIT":
+			timmy.powerToggle();
+			//?? programRunning = false;
+			break;
+		case "RESET":
+			timmy.reset();
+			break;
+		case "TIME": 
+			//?? param = scan.next();
+			break;
+		case "DNF":
+			timmy.DNF();
+			break;
+		case "CANCEL":
+			timmy.cancel();
+			break;
+		case "TOG":
+			channel = Integer.parseInt(secondaryParam);
+			timmy.toggle(channel);
+			break;
+		case "TOGGLE":
+			channel = Integer.parseInt(secondaryParam);
+			timmy.toggle(channel);
+			break;
+		case "TRIG":
+			trigger = Integer.parseInt(secondaryParam);
+			/*hacky way of forcing triggers on only 1 or 2
+			 * this way we can have all the channels as actual objects
+			 * to avoid null pointer dereferencing
+			 * 
+			 * This will need to be modified when we add new event types
+			 */
+			if(cmdFile){
+				timmy.trigger(trigger, timeStamp);
+			}
+			else{
+				timmy.trigger(trigger);
+			}
+			
+			break;
+		case "NEWRUN":
+			timmy.newRun();
+			break;
+		case "START":
+			timmy.start();
+			break;
+		case "ENDRUN":
+			timmy.endRun();
+			break;
+		case "FINISH":
+			timmy.finish();
+			break;
+		case "NUM":
+			int number = Integer.parseInt(secondaryParam);
+			timmy.setNum(number);
+			break;
+		case "EVENT":
+			String event = secondaryParam;
+			timmy.setEvent(event);
+			break;
+		case "PRINT":
+			timmy.print();
+			break;
+
+		default:
+			System.out.println("You can't do that");
+			break;
+		}
+		System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
 	}
 }
