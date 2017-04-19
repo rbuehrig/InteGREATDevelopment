@@ -23,7 +23,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
@@ -233,7 +235,7 @@ public class Simulator {
 		JLabel label_triDown = new JLabel();
 		label_triDown.setSize(30, 30);
 		label_triDown.setLocation(135, 251);
-		ImageIcon triDown = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingDown.png");
+		ImageIcon triDown = new ImageIcon("TrianglePointingDown.png");
 		Image scaledTriDown = triDown.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
 		label_triDown.setIcon(new ImageIcon(scaledTriDown));
 		frame.getContentPane().add(label_triDown);
@@ -242,7 +244,7 @@ public class Simulator {
 		
 		label_triLeft.setSize(30, 30);
 		label_triLeft.setLocation(44, 251);
-		ImageIcon triLeft = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingLeft.png");
+		ImageIcon triLeft = new ImageIcon("TrianglePointingLeft.png");
 		Image scaledTriLeft = triLeft.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
 		label_triLeft.setIcon(new ImageIcon(scaledTriLeft));
 		frame.getContentPane().add(label_triLeft);
@@ -250,7 +252,7 @@ public class Simulator {
 		JLabel label_triRight = new JLabel();
 		label_triRight.setSize(30, 30);
 		label_triRight.setLocation(86, 251);
-		ImageIcon triRight = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingRight.png");
+		ImageIcon triRight = new ImageIcon("TrianglePointingRight.png");
 		Image scaledTriRight = triRight.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
 		label_triRight.setIcon(new ImageIcon(scaledTriRight));
 		frame.getContentPane().add(label_triRight);
@@ -258,7 +260,7 @@ public class Simulator {
 		JLabel label_triUp = new JLabel();
 		label_triUp.setSize(30, 30);
 		label_triUp.setLocation(164, 251);
-		ImageIcon triUp = new ImageIcon("/Users/RylieBuehrig/git/InteGREATDevelopment/ChronoTimer/TrianglePointingUp.png");
+		ImageIcon triUp = new ImageIcon("TrianglePointingUp.png");
 		Image scaledTriUp = triUp.getImage().getScaledInstance(28, 26,Image.SCALE_DEFAULT);
 		label_triUp.setIcon(new ImageIcon(scaledTriUp));
 		frame.getContentPane().add(label_triUp);
@@ -283,6 +285,19 @@ public class Simulator {
 		panel.setBounds(525, 214, 147, 173);
 		frame.getContentPane().add(panel);
 		panel.setLayout(new GridLayout(4, 3));
+
+		//ADDING POPUP MENU HERE 4/18
+		JPopupMenu sensorMenu = new JPopupMenu();
+		JMenuItem pushButton = new JMenuItem("Push Button");
+		JMenuItem elecEye = new JMenuItem("Electric Eye");
+		JMenuItem gate = new JMenuItem("Gate Sensor");
+		JMenuItem pad = new JMenuItem("Pad Sensor");
+		
+		sensorMenu.add(pushButton);
+		sensorMenu.add(elecEye);
+		sensorMenu.add(gate);
+		sensorMenu.add(pad);
+		//END OF POPUP MENU CODE
 		
 		JButton button_12 = new JButton("1");
 		panel.add(button_12);
@@ -587,6 +602,74 @@ public class Simulator {
 				commands("TOG 8",timmy);
 			}
 		});
+		
+		//ADDING RADIO BUTTON POPUP MENUS HERE
+		
+		radioButton.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_1.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_1.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_2.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_2.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_3.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_3.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_4.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_4.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_5.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_5.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_6.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_6.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+
+		radioButton_7.addMouseListener(new MouseAdapter(){
+			public void mousePressed(MouseEvent evt) {
+				if(!radioButton_7.isSelected()){
+					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+				}
+			}
+		});
+		
+		//END POPUP MENU CODE
 		
 		button.addActionListener(new ActionListener() {
 			@Override
