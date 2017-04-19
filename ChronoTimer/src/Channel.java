@@ -1,8 +1,16 @@
-
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//Authors: Phil
+//
+//
+//Description: Channel object.
+//
+//////////////////////////////////////////
 public class Channel {
 	private boolean armed;
 	private boolean type;
-	private Time time;
+//	private Time time;
 	
 	
 	/*Channel type relies on boolean 'type'
@@ -12,7 +20,7 @@ public class Channel {
 	public Channel(boolean type, Time time){
 		armed = false;
 		this.type = type;
-		this.time = time;
+		//this.time = time;
 	}
 	
 	public void toggle(){
@@ -28,12 +36,31 @@ public class Channel {
 	 * If it's a start channel, creates and returns a new Start time within specified Time object
 	 * If it's a finish channel, calculates and returns the time for the next finishing racer
 	 */
-	public long trigger(){
+	public long trigger(Time obj){
+		if(armed = false){
+			System.out.println("Channel is not active");
+			return -1;
+		}
+		
 		if(type == true){
-			return time.start();
+			return obj.start();
 		}
 		else{
-			return time.finish();
+			return obj.finish();
+		}
+	}
+	
+	public long trigger(Time obj, long customTime){
+		if(armed = false){
+			System.out.println("Channel is not active");
+			return -1;
+		}
+		
+		if(type == true){
+			return obj.start(customTime);
+		}
+		else{
+			return obj.finish(customTime);
 		}
 	}
 	
@@ -45,12 +72,12 @@ public class Channel {
 		return this.type;
 	}
 	
-	public void setTime(Time time){
-		this.time = time;
-	}
-	
-	public Time getTime(){
-		return this.time;
-	}
+//	public void setTime(Time time){
+//		this.time = time;
+//	}
+//	
+//	public Time getTime(){
+//		return this.time;
+//	}
 
 }

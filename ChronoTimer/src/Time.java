@@ -1,18 +1,30 @@
 import java.time.Clock;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Queue;
 
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//Authors: Phil
+//
+//
+//Description: Time object.
+//
+//////////////////////////////////////////
 
 public class Time {
 	private LinkedList<Long> startTimes;
-	private LinkedList<Long> racerTimes;
+	protected ArrayList<Long> racerTimes;
 	
-	private Clock clock;
+	//Keep track of which racer corresponds to time object
+	protected ArrayList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new LinkedList<Long>();
+		racerTimes = new ArrayList<Long>();
+		racerNums = new ArrayList<Integer>();
 	}
 	
 	/**
@@ -23,7 +35,7 @@ public class Time {
 	 * @return clock.millis()
 	 */
 	public long start(){
-		long start = clock.millis();
+		long start = System.currentTimeMillis();
 		startTimes.add(start);
 		return start;
 	}
@@ -36,7 +48,7 @@ public class Time {
 	 * @param start
 	 * @return start time that was added
 	 */
-	public long start(long start){
+	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
 		startTimes.add(start);
 		return start;
 	}
@@ -50,9 +62,12 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(){
-		if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
+		if(startTimes.isEmpty()){
+			System.out.println("No racers started");
+			return -1;
+		}
 		
-		long finish = clock.millis();
+		long finish = System.currentTimeMillis();
 		long start = startTimes.pollFirst();
 		long time = finish - start;
 		racerTimes.add(time);
@@ -69,13 +84,15 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(long finish){
-		if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
+		//if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
 		
-		long start = startTimes.pollFirst();
-		long time = finish - start;
-		racerTimes.add(time);
-		return time;
-		
+		if (!startTimes.isEmpty()){
+			long start = startTimes.pollFirst();
+			long time = finish - start;
+			racerTimes.add(time);
+			return time;
+		}
+		return 0;
 	}
 	
 	/**
@@ -99,11 +116,20 @@ public class Time {
 	}
 	
 	/**
+	 * Returns the amount of racers that have started.
+	 * 
+	 * @return number of started races
+	 */
+	public int getNumTimes(){
+		return startTimes.size();
+	}
+	
+	/**
 	 * Returns a list of racer times in order of when the start gate was triggered
 	 * 
 	 * @return LinkedList of racer times
 	 */
-	public LinkedList<Long> getTimes(){
+	public ArrayList<Long> getTimes(){
 		return racerTimes;
 	}
 	
@@ -119,15 +145,12 @@ public class Time {
 		long hour = Long.parseLong(parts[0]);
 		long minute = Long.parseLong(parts[1]);
 		String second = parts[2];
-		String[] secondParts = second.split(".");
+		String[] secondParts = second.split("\\.");
 		long second1 = Long.parseLong(secondParts[0]);
 		long second2 = Long.parseLong(secondParts[1]); 
 		
 		
 		long parsedTime = (hour * 3600000) + (minute * 60000) + (second1 * 1000) + (second2 * 10);
 		return parsedTime;
-		
 	}
-	
-
 }
