@@ -17,7 +17,7 @@ import java.util.Queue;
 public class Time {
 	private LinkedList<Long> startTimes;
 	protected ArrayList<Long> racerTimes;
-	
+
 	//Keep track of which racer corresponds to time object
 	protected ArrayList<Integer> racerNums;
 	
@@ -25,7 +25,7 @@ public class Time {
 		startTimes = new LinkedList<Long>();
 		racerTimes = new ArrayList<Long>();
 		racerNums = new ArrayList<Integer>();
-	}
+		}
 	
 	/**
 	 * Default method for a start event
@@ -48,7 +48,8 @@ public class Time {
 	 * @param start
 	 * @return start time that was added
 	 */
-	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
+	//change - should this check if there already is a start time and then remove it if there is and just reset the start time
+	public long start(long start){
 		startTimes.add(start);
 		return start;
 	}
@@ -84,8 +85,9 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(long finish){
+
 		//if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
-		
+
 		if (!startTimes.isEmpty()){
 			long start = startTimes.pollFirst();
 			long time = finish - start;
