@@ -351,10 +351,12 @@ public class Chronotimer {
 	 * @version 1 - 02/26/17
 	 * @author Matthew Buchanan and Rylie Buehrig
 	 */
-	public void toggle(int channelNum){
-		if (on && eventSet && newRunCalled) {
+	public boolean toggle(int channelNum){
+		if (on && eventSet && newRunCalled && (channelNum <= channels.size())) {
 			channels.get(channelNum - 1).toggle();
+			return true;
 		}
+		else return false;
 	}
 
 	//TODO check if the channel exists and is active
@@ -380,7 +382,7 @@ public class Chronotimer {
 			//*1 and 2			
 			if ((channels.size() >= 1) && channelNum == 1) {
 				channels.get(channelNum - 1).trigger(times.get(0));
-				times.get(0).racerNums.add(racerNums.get(whichRacer));
+				if (whichRacer < racerNums.size()) {times.get(0).racerNums.add(racerNums.get(whichRacer));}
 				whichRacer++;
 				timeObjNum = 0;
 			}

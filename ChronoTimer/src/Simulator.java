@@ -50,6 +50,7 @@ public class Simulator {
 	static Scanner scan;
 	static boolean funcCompleted;
 	static boolean power;
+	static boolean canToggle;
 	
 	public static void main(String[] args) {		
 		try{	
@@ -69,6 +70,7 @@ public class Simulator {
 			functionNumber = 1;
 			funcCompleted = false;
 			power = false;
+			canToggle = true;
 			
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -536,6 +538,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 1",timmy);
+				if (!canToggle) {radioButton.setSelected(false);}
 			}
 		});
 		
@@ -543,6 +546,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 2",timmy);
+				if (!canToggle) {radioButton_4.setSelected(false);}
 			}
 		});
 		
@@ -550,6 +554,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 3",timmy);
+				if (!canToggle) {radioButton_1.setSelected(false);}
 			}
 		});
 		
@@ -557,6 +562,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 4",timmy);
+				if (!canToggle) {radioButton_5.setSelected(false);}
 			}
 		});
 		
@@ -564,6 +570,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 5",timmy);
+				if (!canToggle) {radioButton_2.setSelected(false);}
 			}
 		});
 		
@@ -571,6 +578,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 6",timmy);
+				if (!canToggle) {radioButton_6.setSelected(false);}
 			}
 		});
 		
@@ -578,6 +586,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 7",timmy);
+				if (!canToggle) {radioButton_3.setSelected(false);}
 			}
 		});
 		
@@ -585,6 +594,7 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("TOG 8",timmy);
+				if (!canToggle) {radioButton_7.setSelected(false);}
 			}
 		});
 		
@@ -703,11 +713,7 @@ public class Simulator {
 			break;
 		case "TOG":
 			channel = Integer.parseInt(secondaryParam);
-			timer.toggle(channel);
-			break;
-		case "TOGGLE":
-			channel = Integer.parseInt(secondaryParam);
-			timer.toggle(channel);
+			canToggle = timer.toggle(channel);
 			break;
 		case "TRIG":
 			trigger = Integer.parseInt(secondaryParam);

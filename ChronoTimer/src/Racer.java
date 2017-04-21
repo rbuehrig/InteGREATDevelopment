@@ -25,4 +25,6 @@ public class Racer {
 		
 		//possible case for if a racer did not start?
 	}
+	
+	
 }
