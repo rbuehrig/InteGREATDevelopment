@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import javafx.event.EventType;
+
 //Class: CS 361
 //Authors: Matthew and Rylie
 //
@@ -35,6 +37,8 @@ public class Chronotimer {
 
 	//Keep track of if EVENT is called
 	private boolean eventSet;
+	
+	private EventType eventType;
 
 	//keep track of the current trigger number
 	private int whichRacer;
@@ -45,7 +49,8 @@ public class Chronotimer {
 
 	private int raceNum = 1;
 
-
+	private boolean triggerOne; private boolean triggerThree;
+	
 	/**
 	 * Constructor
 	 * 
@@ -58,7 +63,10 @@ public class Chronotimer {
 		on = false;
 		newRunCalled = false;
 		eventSet = false;
+		eventType = EventType.UNSET;
 		whichRacer = 0;
+		triggerOne = false;
+		triggerThree = false;
 	}
 
 
@@ -93,6 +101,7 @@ public class Chronotimer {
 		//Allows for a newRun to be called.
 		newRunCalled = false;
 		eventSet = false;
+		eventType = EventType.UNSET;
 		
 		return on;
 	}
@@ -127,13 +136,21 @@ public class Chronotimer {
 		if (on){
 			switch (eventType){
 			case "IND":
+				this.eventType = EventType.IND;
 				initChannels(2);
 				eventSet = true;
 				break;
 
 			case "PARIND":
+				this.eventType = EventType.PARIND;
 				initChannels(4);
 				eventSet = true;
+				break;
+			
+			case "GRP":
+				this.eventType = EventType.GRP;
+				times.add(new GroupTime());
+				initChannels(6); //TODO ?
 				break;
 			}
 		}
@@ -155,12 +172,32 @@ public class Chronotimer {
 
 		//This could be wrong
 		//Assumes both Time objects will get the same time for reference
-		if (on && eventSet && (times.size() > 1)){
-			times.get(0).start(timeLong);
-			times.get(1).start(timeLong);
-		}
-		else if (on && eventSet && (times.size() == 1)){
-			times.get(0).start(timeLong);
+//		if (on && eventSet && (times.size() > 1)){
+//			times.get(0).start(timeLong);
+//			times.get(1).start(timeLong);
+//		}
+//		else if (on && eventSet && (times.size() == 1)){
+//			times.get(0).start(timeLong);
+//		}
+		if (on){
+			switch(eventType){
+				case IND:
+					times.get(0).start(timeLong);
+					break;
+				
+				case PARIND:
+					times.get(0).start(timeLong);
+					times.get(1).start(timeLong);
+					break;
+					
+				case GRP:
+					times.get(0).start(timeLong);
+					break;
+					
+				case UNSET:
+					//DO Nothing
+					break;
+			}
 		}
 	}
 
@@ -223,13 +260,15 @@ public class Chronotimer {
 	 * @version 1 - 02/27/17
 	 * @author Rylie Buehrig
 	 */
-	public void print(){
-		if (on && eventSet && newRunCalled)	{
+	public long print(){
+		if (on && eventSet && newRunCalled && times.getFirst().racerTimes.size() > 0) {	
 			createRacerQueue();
 			dp.add(racers);
 			//print will print results to console
 			dp.print("console",raceNum);
+			return 0;
 		}
+		else return -1;
 	}
 
 
@@ -325,7 +364,7 @@ public class Chronotimer {
 	public void DNF(){
 		//I just have a variable to keep track of the which time object was last
 		//added to.
-		if (on && eventSet && newRunCalled) times.get(timeObjNum).dnf();
+		if (OnWithEventSet() && newRunCalled) times.get(timeObjNum).dnf();
 	}
 
 	/** 
@@ -359,11 +398,6 @@ public class Chronotimer {
 		else return false;
 	}
 
-	//TODO check if the channel exists and is active
-
-	//TODO make sure a finish time has a corresponding start time.
-	//If you trigger an odd channel 
-
 
 	/** 
 	 * This method will call the channel's trigger method.
@@ -374,9 +408,11 @@ public class Chronotimer {
 	 * @version 1 - 03/3/17
 	 * @author Matthew Buchanan and Rylie Buehrig
 	 */
-	public void trigger(int channelNum){
+	public long trigger(int channelNum){
 		//Need to somehow denote which racer corresponds to which time object and in which order
-		if (on && newRunCalled && eventSet){	
+		long temp = 0;
+		
+		if (on && eventSet && newRunCalled){	
 			//*somewhere we need to see if the triggered channel is odd or even 
 			//*because start and stop methods right now trigger specifically channels
 			//*1 and 2			
@@ -385,20 +421,31 @@ public class Chronotimer {
 				if (whichRacer < racerNums.size()) {times.get(0).racerNums.add(racerNums.get(whichRacer));}
 				whichRacer++;
 				timeObjNum = 0;
+				triggerOne = true;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
-				channels.get(channelNum - 1).trigger(times.get(0));
+				if (triggerOne) {
+					channels.get(channelNum - 1).trigger(times.get(0));
+					triggerOne = false;
+				}
+				else temp = -1;
 			}
 			if ((channels.size() >= 3) && channelNum == 3) {
 				channels.get(channelNum - 1).trigger(times.get(1));
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
 				whichRacer++;
 				timeObjNum = 1;
+				triggerThree = true;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
-				channels.get(channelNum - 1).trigger(times.get(1));
+				if (triggerThree) {
+					channels.get(channelNum - 1).trigger(times.get(1));
+					triggerThree = false;
+				}
+				else temp = -1;
 			}	
 		}
+		return temp;
 	}
 
 	/**
@@ -407,9 +454,11 @@ public class Chronotimer {
 	 * @param channelNum
 	 * @param customTime
 	 */
-	public void trigger(int channelNum, String customTime){
+	public long trigger(int channelNum, String customTime){
 		//Avoids the issue of having more racer start times than racer numbers
-		if (on && newRunCalled && eventSet) {
+		long temp = 0;
+		
+		if (on && eventSet && newRunCalled) {
 			long tempTime = times.get(0).parseMilli(customTime);
 
 			if ((channels.size() >= 1) && channelNum == 1) {
@@ -417,19 +466,42 @@ public class Chronotimer {
 				times.get(0).racerNums.add(racerNums.get(whichRacer));
 				whichRacer++;
 				timeObjNum = 0;
+				triggerOne = true;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
-				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
+				if (triggerOne) {
+					channels.get(channelNum - 1).trigger(times.get(0),tempTime);
+					triggerOne = false;
+				}
+				else temp = -1;
 			}
 			if ((channels.size() >= 3) && channelNum == 3) {
 				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
 				whichRacer++;
 				timeObjNum = 1;
+				triggerThree = true;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
-				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
+				if(triggerThree) {
+					channels.get(channelNum - 1).trigger(times.get(1),tempTime);
+					triggerThree = false;
+				}
+				else temp = -1;
 			}
 		}
+		return temp;
+	}
+	
+	//Private Helpers
+	private enum EventType {
+		UNSET,
+		IND,
+		PARIND,
+		GRP
+	}
+	
+	private boolean OnWithEventSet() {
+		return on && eventType != EventType.UNSET;
 	}
 }
