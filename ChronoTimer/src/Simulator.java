@@ -28,6 +28,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
+import javax.swing.MenuElement;
 import javax.swing.SwingConstants;
 
 //////////////////////////////////////////
@@ -53,7 +54,7 @@ public class Simulator {
 	static boolean funcCompleted;
 	static boolean power;
 	static boolean canToggle;
-	static boolean startedRace;
+	static boolean numbersEntered;
 
 	public static void main(String[] args) {		
 		try{	
@@ -74,6 +75,7 @@ public class Simulator {
 			funcCompleted = false;
 			power = false;
 			canToggle = true;
+			numbersEntered = false;
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -308,7 +310,6 @@ public class Simulator {
 		sensorMenu.add(elecEye);
 		sensorMenu.add(gate);
 		sensorMenu.add(pad);
-		sensorMenu.setEnabled(false);
 		//END OF POPUP MENU CODE
 
 		JButton button_12 = new JButton("1");
@@ -393,10 +394,6 @@ public class Simulator {
 							textPane.setText(getRaceMenuLines(menuVersion));
 						}
 					}
-
-					else if (functionNumber == 2){
-
-					}
 				}
 			}
 		});
@@ -415,30 +412,39 @@ public class Simulator {
 
 						if (funcCompleted) {
 							commands("NEWRUN",timmy);
+							radioButton.setEnabled(true); radioButton_1.setEnabled(true); 
+							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
+							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
+							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
 							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
 							functionNumber++;
 						}
 					}
 					else if (functionNumber == 2){
 						String[] items = textPane.getText().split("\n");
-						if (!items[1].equals("#")) {
+						
+						char[] nums = items[1].toCharArray();
+						boolean badinput = false;
+						for(int i = 0; i < nums.length; i++){
+							if(nums[i] < 48 || nums[i] > 57) badinput = true;
+						}
+						
+						if(!items[1].equals("#") && nums.length > 1 && badinput){
+							textPane.setText("Invalid racer number! Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
+						}
+						else if (!items[1].equals("#")) {
 							commands("NUM " + items[1],timmy);
 							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
 						}
 						else {
-							radioButton.setEnabled(true); radioButton_1.setEnabled(true);
-							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
-							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
-							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
-							sensorMenu.setEnabled(true);
-							textPane.setText("Waiting for race to start... Toggle channels before starting race, and press a Start button to begin race.");
+							numbersEntered = true;
+							textPane.setText("Waiting for race to start... Toggle channels before starting race. Then press a Start button to begin race.");
 							//functionNumber++;
 						}
 					}
 					else if (functionNumber == 3){
 						commands("ENDRUN",timmy);
 						textPane.setText("Race is completed. See output file for results, or press FUNCTION for a new race.");
-						startedRace = false;
 						functionNumber++;
 					}
 					else if (functionNumber == 4){
@@ -591,177 +597,173 @@ public class Simulator {
 			}
 		});
 
-		//		radioButton.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 1",timmy);
-		//					if (!canToggle) {radioButton.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_4.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 2",timmy);
-		//					if (!canToggle) {radioButton_4.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_1.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 3",timmy);
-		//					if (!canToggle) {radioButton_1.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_5.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if(power){
-		//					commands("TOG 4",timmy);
-		//					if (!canToggle) {radioButton_5.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_2.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 5",timmy);
-		//					if (!canToggle) {radioButton_2.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_6.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 6",timmy);
-		//					if (!canToggle) {radioButton_6.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_3.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 7",timmy);
-		//					if (!canToggle) {radioButton_3.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_7.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 8",timmy);
-		//					if (!canToggle) {radioButton_7.setSelected(false);}
-		//				}
-		//			}
-		//		});
+//				radioButton.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 1",timmy);
+//							if (!canToggle) {radioButton.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_4.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 2",timmy);
+//							if (!canToggle) {radioButton_4.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_1.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 3",timmy);
+//							if (!canToggle) {radioButton_1.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_5.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if(power){
+//							commands("TOG 4",timmy);
+//							if (!canToggle) {radioButton_5.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_2.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 5",timmy);
+//							if (!canToggle) {radioButton_2.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_6.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 6",timmy);
+//							if (!canToggle) {radioButton_6.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_3.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 7",timmy);
+//							if (!canToggle) {radioButton_3.setSelected(false);}
+//						}
+//					}
+//				});
+//
+//				radioButton_7.addActionListener(new ActionListener() {
+//					@Override
+//					public void actionPerformed(ActionEvent e) {
+//						if (power){
+//							commands("TOG 8",timmy);
+//							if (!canToggle) {radioButton_7.setSelected(false);}
+//						}
+//					}
+//				});
 
 		//ADDING RADIO BUTTON POPUP MENUS HERE
-		radioButton.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 					commands("TOG 1",timmy);
-					if (!canToggle){radioButton.setSelected(false);}
+					if (!canToggle) {radioButton.setSelected(false);}
+					else {sensorMenu.show(frame, 299, 86);}
 				}
 			}
 		});
 
-		radioButton_1.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 3",timmy);
-					}
-					else {radioButton_1.setSelected(false);}
+					commands("TOG 3",timmy);
+					if (!canToggle)  {radioButton_1.setSelected(false);}
+					else {sensorMenu.show(frame, 339, 86);}
 				}
 			}
 		});
 
-		radioButton_2.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 5",timmy);
-					}
-					else {radioButton_2.setSelected(false);}
+					commands("TOG 5",timmy);
+					if (!canToggle)  {radioButton_2.setSelected(false);}
+					else {sensorMenu.show(frame, 379, 86);}
 				}
 			}
 		});
 
-		radioButton_3.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 7",timmy);
-					}
-					else {radioButton_3.setSelected(false);}
+					commands("TOG 7",timmy);
+					if (!canToggle)  {radioButton_3.setSelected(false);}
+					else {sensorMenu.show(frame, 419, 86);}
 				}
 			}
 		});
 
-		radioButton_4.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_4.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 2",timmy);
-					}
-					else {radioButton_4.setSelected(false);}
+					commands("TOG 2",timmy);
+					if (!canToggle)  {radioButton_4.setSelected(false);}
+					else {sensorMenu.show(frame, 299, 181);}
 				}
 			}
 		});
 
-		radioButton_5.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_5.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 4",timmy);
+					commands("TOG 4",timmy);
+					if (!canToggle)  {radioButton_5.setSelected(false);}
+					else {
+						sensorMenu.show(frame, 339, 181);
 					}
-					else {radioButton_5.setSelected(false);}
 				}
 			}
 		});
 
-		radioButton_6.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_6.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if(canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 6",timmy);
-					}
-					else {radioButton_6.setSelected(false);}
+					commands("TOG 6",timmy);
+					if (!canToggle)  {radioButton_6.setSelected(false);}
+					else {sensorMenu.show(frame,379, 181);}
 				}
 			}
 		});
 
-		radioButton_7.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_7.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if(canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 8",timmy);
-					}
-					else {radioButton_7.setSelected(false);}
+					commands("TOG 8",timmy);
+					if (!canToggle) {radioButton_7.setSelected(false);}
+					else {sensorMenu.show(frame, 419, 181);}
 				}
 			}
 		});
@@ -773,11 +775,10 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					commands("TRIG 1",timmy);
-					if (!startedRace) {
-						startedRace = true;
+					if (numbersEntered) {
 						textPane.setText("Race in progress... Press Print to output current results. Press FUNCTION "
 								+ "to end race and output results to file.");
-						functionNumber++;
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -786,7 +787,12 @@ public class Simulator {
 		button_4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(power){commands("TRIG 2",timmy);}
+				if(power){
+					if(commands("TRIG 2",timmy) == -1) {
+						textPane.setText("Start time not triggered, please trigger channel 1 "
+								+ "before triggering channel 2.");
+					}
+				}
 			}
 		});
 
@@ -795,11 +801,10 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					commands("TRIG 3",timmy);
-					if (!startedRace) {
-						startedRace = true;
+					if (numbersEntered) {
 						textPane.setText("Race in progress... Press Print to output current results. Press FUNCTION "
 								+ "to end race and output results to file.");
-						functionNumber++;
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -808,7 +813,12 @@ public class Simulator {
 		button_5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){commands("TRIG 4",timmy);}
+				if (power){
+					if(commands("TRIG 4",timmy) == -1) {
+						textPane.setText("Start time not triggered, please trigger channel 3 "
+								+ "before triggering channel 4.");
+					}
+				}
 			}
 		});
 
@@ -817,11 +827,10 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					commands("TRIG 5",timmy);
-					if (!startedRace) {
-						startedRace = true;
+					if (numbersEntered) {
 						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
 								+ "to end race and output results to file.");
-						functionNumber++;
+						if (functionNumber == 2) functionNumber++;
 					}
 				}	
 			}
@@ -830,7 +839,12 @@ public class Simulator {
 		button_6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){commands("TRIG 6",timmy);}
+				if (power){
+					if(commands("TRIG 6",timmy) == -1) {
+						textPane.setText("Start time not triggered, please trigger channel 5 "
+								+ "before triggering channel 6.");
+					}
+				}
 			}
 		});
 
@@ -839,11 +853,10 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if(power){
 					commands("TRIG 7",timmy);
-					if (!startedRace) {
-						startedRace = true;
+					if (numbersEntered) {
 						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
 								+ "to end race and output results to file.");
-						functionNumber++;
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -852,14 +865,23 @@ public class Simulator {
 		button_7.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){commands("TRIG 8",timmy);}
+				if (power){
+					if(commands("TRIG 8",timmy) == -1) {
+						textPane.setText("Start time not triggered, please trigger channel 7 "
+								+ "before triggering channel 8.");
+					}
+				}
 			}
 		});
 
 		btnPrinterPower.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){commands("PRINT",timmy);}
+				if (power){
+					if (commands("PRINT",timmy) == -1){
+						textPane.setText("Cannot print because no racers have started.");
+					}
+				}
 			}
 		});
 
@@ -885,10 +907,10 @@ public class Simulator {
 	}
 
 
-	private static void commands(String input, Chronotimer timer) {	
+	private static long commands(String input, Chronotimer timer) {	
 		date = new Date();
 		timeStamp = date.toString().substring(11,19);		
-
+		long temp = 0;
 		int channel;
 		int trigger;
 
@@ -922,7 +944,7 @@ public class Simulator {
 			break;
 		case "TOG":
 			channel = Integer.parseInt(secondaryParam);
-			timer.toggle(channel);
+			canToggle = timer.toggle(channel);
 			break;
 		case "TRIG":
 			trigger = Integer.parseInt(secondaryParam);
@@ -936,7 +958,7 @@ public class Simulator {
 				timer.trigger(trigger, timeStamp);
 			}
 			else{
-				timer.trigger(trigger);
+				temp = timer.trigger(trigger);
 			}
 
 			break;
@@ -961,7 +983,7 @@ public class Simulator {
 			timer.setEvent(event);
 			break;
 		case "PRINT":
-			timer.print();
+			temp = timer.print();
 			break;
 		case "SWAP": 
 			//timer.swap();
@@ -972,5 +994,6 @@ public class Simulator {
 			break;
 		}
 		System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+		return temp;
 	}
 }
