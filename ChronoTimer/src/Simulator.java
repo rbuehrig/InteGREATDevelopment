@@ -430,6 +430,7 @@ public class Simulator {
 							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
 							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
 							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
+							sensorMenu.setEnabled(true);
 							textPane.setText("Waiting for race to start... Toggle channels before starting race, and press a Start button to begin race.");
 							//functionNumber++;
 						}
