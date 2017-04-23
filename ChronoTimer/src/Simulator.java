@@ -723,7 +723,7 @@ public class Simulator {
 
 						}
 						else if (eventType.equals("GRP")){
-
+							textPane.setText(getGRPRaceText());
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -747,7 +747,7 @@ public class Simulator {
 
 						}
 						else if (eventType.equals("GRP")){
-
+							textPane.setText(getGRPRaceText());
 						}
 					}
 					
@@ -909,6 +909,11 @@ public class Simulator {
 
 
 		return queued + current + finished + endRace;
+	}
+	
+	public static String getGRPRaceText(){
+		String groupText = "Start Time:\t" + timmy.times.get(0).getGroupStartTime();
+		
 	}
 
 	private static long commands(String input, Chronotimer timer) {	

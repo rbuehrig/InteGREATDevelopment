@@ -82,9 +82,16 @@ public class Chronotimer {
 	 */
 	private void initChannels(int numChans){
 		for(int i = 0; i < numChans; i+=2){
-			times.add(new Time());
-			channels.add(new Channel(true, times.peekLast()));
-			channels.add(new Channel(false, times.peekLast()));
+			if(this.eventType == EventType.GRP){
+				times.add(new GroupTime());
+				channels.add(new Channel(true, times.peekLast()));
+				channels.add(new Channel(false, times.peekLast()));
+			}
+			else{
+				times.add(new Time());
+				channels.add(new Channel(true, times.peekLast()));
+				channels.add(new Channel(false, times.peekLast()));
+			}
 		}
 	}
 
@@ -152,8 +159,8 @@ public class Chronotimer {
 			
 			case "GRP":
 				this.eventType = EventType.GRP;
-				times.add(new GroupTime());
-				initChannels(6); //TODO ?
+				initChannels(2); //TODO ?
+				eventSet = true;
 				break;
 			}
 		}
