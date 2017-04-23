@@ -269,11 +269,11 @@ public class ChronoTimerWindow {
 		frame.getContentPane().add(lblQueueRunning);
 		
 		JButton btnPrinterPower = new JButton("Printer Power");
-		btnPrinterPower.setBounds(536, 1, 117, 29);
+		btnPrinterPower.setBounds(531, 19, 117, 29);
 		frame.getContentPane().add(btnPrinterPower);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(525, 214, 147, 173);
+		panel.setBounds(519, 214, 147, 173);
 		frame.getContentPane().add(panel);
 		panel.setLayout(new GridLayout(4, 3));
 		
@@ -318,20 +318,21 @@ public class ChronoTimerWindow {
 		frame.getContentPane().add(btnSwap);
         
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setBounds(525, 42, 141, 148);
+        layeredPane.setBounds(505, 46, 175, 155);
         frame.getContentPane().add(layeredPane);
         
         JTextPane textPane_2 = new JTextPane();
+        textPane_2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
         textPane_2.setEditable(false);
         layeredPane.setLayer(textPane_2, 1);
-        textPane_2.setBounds(18, 16, 104, 107);
+        textPane_2.setBounds(17, 6, 140, 127);
         textPane_2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         layeredPane.add(textPane_2);
         
         JTextPane textPane_1 = new JTextPane();
         textPane_1.setEditable(false);
         textPane_1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        textPane_1.setBounds(6, 54, 129, 88);
+        textPane_1.setBounds(6, 61, 163, 88);
         layeredPane.add(textPane_1);
         
         

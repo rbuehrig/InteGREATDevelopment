@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 //////////////////////////////////////////
@@ -15,8 +16,8 @@ public class GroupTime extends Time{
 
 	public GroupTime(){
 		groupStartTime = 0;
-		racerTimes = new ArrayList<Long>();
-		racerNums = new ArrayList<Integer>();
+		racerTimes = new LinkedList<Long>();
+		racerNums = new LinkedList<Integer>();
 	}
 	
 	/**

@@ -15,16 +15,16 @@ import java.util.Queue;
 //////////////////////////////////////////
 
 public class Time {
-	private LinkedList<Long> startTimes;
-	protected ArrayList<Long> racerTimes;
+	protected LinkedList<Long> startTimes;
+	protected LinkedList<Long> racerTimes;
 	
 	//Keep track of which racer corresponds to time object
-	protected ArrayList<Integer> racerNums;
+	protected LinkedList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new ArrayList<Long>();
-		racerNums = new ArrayList<Integer>();
+		racerTimes = new LinkedList<Long>();
+		racerNums = new LinkedList<Integer>();
 	}
 	
 	/**
@@ -116,6 +116,19 @@ public class Time {
 	}
 	
 	/**
+	 * Swaps next two racers
+	 * 
+	 * @author Nicholas Kopplin
+	 */
+	public void swap(){
+		Long startTimeFirst = startTimes.removeLast();
+		Long startTimeSecond = startTimes.removeLast();
+		startTimes.add(startTimeSecond);
+		startTimes.add(startTimeFirst);
+	}
+	
+	
+	/**
 	 * Returns the amount of racers that have started.
 	 * 
 	 * @return number of started races
@@ -129,7 +142,7 @@ public class Time {
 	 * 
 	 * @return LinkedList of racer times
 	 */
-	public ArrayList<Long> getTimes(){
+	public LinkedList<Long> getTimes(){
 		return racerTimes;
 	}
 	
