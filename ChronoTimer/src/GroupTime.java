@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
@@ -13,6 +14,7 @@ import java.util.NoSuchElementException;
 //////////////////////////////////////////
 public class GroupTime extends Time{
 	private long groupStartTime;
+	private String timeStamp;
 
 	public GroupTime(){
 		groupStartTime = 0;
@@ -30,6 +32,9 @@ public class GroupTime extends Time{
 	public long start(){
 		if(groupStartTime == 0){
 			groupStartTime = System.currentTimeMillis();
+			//stores a time stamp for displaying start time
+			Date date = new Date();
+			timeStamp = date.toString().substring(11,19);
 		}
 		else{
 			//do nothing
@@ -97,8 +102,8 @@ public class GroupTime extends Time{
 	 * 
 	 * @return groupStartTime
 	 */
-	public long getGroupStartTime(){
-		return groupStartTime;
+	public String getStartTime(){
+		return timeStamp;
 	}
 	
 	/**

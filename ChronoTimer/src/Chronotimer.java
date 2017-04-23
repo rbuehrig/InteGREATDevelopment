@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import javafx.event.EventType;
+//import javafx.event.EventType;
 
 //Class: CS 361
 //Authors: Matthew and Rylie
@@ -325,12 +325,23 @@ public class Chronotimer {
 			for (int i = 0; i < racerNums.size(); i++){				
 				for (int j = i; j < racerNums.size(); j++){
 					//look through the first time object for the racer number's time
-					if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){				
-						if (times.get(0).racerNums.get(j) == racerNums.get(i)){
-							raceTime = times.get(0).racerTimes.get(j);
-							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
-							break;
+					
+					if(this.eventType != EventType.GRP){
+						if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){
+
+
+							if (times.get(0).racerNums.get(j) == racerNums.get(i)){
+								raceTime = times.get(0).racerTimes.get(j);
+								racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
+								break;
+							}
+
+
 						}
+					}
+					else if((times.size() >= 1)){
+						racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
+						break;
 					}
 					//look through the second time object for the racer number's time
 					if ((times.size() >= 2) && (i < (times.get(1).racerNums.size()))){				
@@ -457,7 +468,9 @@ public class Chronotimer {
 			if ((channels.size() >= 2) && channelNum == 2) {
 				if (triggerOne) {
 					channels.get(channelNum - 1).trigger(times.get(0));
-					triggerOne = false;
+					//group needs to be able to trigger channel 2 
+					//multiple times without triggering channel one.
+					if(this.eventType != EventType.GRP) triggerOne = false;
 				}
 				else temp = -1;
 			}

@@ -14,6 +14,7 @@ import java.text.*;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -912,8 +913,21 @@ public class Simulator {
 	}
 	
 	public static String getGRPRaceText(){
-		String groupText = "Start Time:\t" + timmy.times.get(0).getGroupStartTime();
+		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n\n";
+		LinkedList<Long> times = timmy.times.get(0).getTimes();
 		
+		String nextFinish = "Next Finish Time:  \n";
+		
+		if(!times.isEmpty()){
+			nextFinish += "Racer #" + times.size() + ": " + timmy.parseTime(times.getLast());
+		}
+		else{
+			nextFinish += "Racer #----: ----";
+		}
+		
+		String endRace = "\n\nPress FUNCTION to end race.";
+		
+		return start + nextFinish + endRace;
 	}
 
 	private static long commands(String input, Chronotimer timer) {	

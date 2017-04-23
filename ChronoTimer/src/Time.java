@@ -150,9 +150,9 @@ public class Time {
 	 * Stub for GroupTime to implement
 	 * 
 	 * 
-	 * @return In a normal time object, simply returns 0
+	 * @return Normal time object -> null; GroupTime -> start time
 	 */
-	public long getGroupStartTime(){return 0;}
+	public String getStartTime(){return null;}
 	
 	/**
 	 * Parses a string of format "HH:MM:SS.SS" into milliseconds for time calculation
