@@ -15,17 +15,17 @@ import java.util.Queue;
 //////////////////////////////////////////
 
 public class Time {
-	private LinkedList<Long> startTimes;
-	protected ArrayList<Long> racerTimes;
-
+	protected LinkedList<Long> startTimes;
+	protected LinkedList<Long> racerTimes;
+	
 	//Keep track of which racer corresponds to time object
-	protected ArrayList<Integer> racerNums;
+	protected LinkedList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new ArrayList<Long>();
-		racerNums = new ArrayList<Integer>();
-		}
+		racerTimes = new LinkedList<Long>();
+		racerNums = new LinkedList<Integer>();
+	}
 	
 	/**
 	 * Default method for a start event
@@ -48,8 +48,7 @@ public class Time {
 	 * @param start
 	 * @return start time that was added
 	 */
-	//change - should this check if there already is a start time and then remove it if there is and just reset the start time
-	public long start(long start){
+	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
 		startTimes.add(start);
 		return start;
 	}
@@ -85,9 +84,8 @@ public class Time {
 	 * @throws NoSuchElementException
 	 */
 	public long finish(long finish){
-
 		//if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
-
+		
 		if (!startTimes.isEmpty()){
 			long start = startTimes.pollFirst();
 			long time = finish - start;
@@ -118,6 +116,19 @@ public class Time {
 	}
 	
 	/**
+	 * Swaps next two racers
+	 * 
+	 * @author Nicholas Kopplin
+	 */
+	public void swap(){
+		Long startTimeFirst = startTimes.removeLast();
+		Long startTimeSecond = startTimes.removeLast();
+		startTimes.add(startTimeSecond);
+		startTimes.add(startTimeFirst);
+	}
+	
+	
+	/**
 	 * Returns the amount of racers that have started.
 	 * 
 	 * @return number of started races
@@ -131,7 +142,7 @@ public class Time {
 	 * 
 	 * @return LinkedList of racer times
 	 */
-	public ArrayList<Long> getTimes(){
+	public LinkedList<Long> getTimes(){
 		return racerTimes;
 	}
 	
