@@ -98,9 +98,9 @@ public class Chronotimer {
 	 * @author Matthew Buchanan and Rylie Buehrig
 	 */
 	public boolean powerToggle(){			
-		if(on){on = !on;}
+		on = !on;
+		reset();
 		
-		else{reset(); on = !on;}
 		//Allows for a newRun to be called.
 		newRunCalled = false;
 		eventSet = false;
@@ -153,7 +153,7 @@ public class Chronotimer {
 			case "GRP":
 				this.eventType = EventType.GRP;
 				times.add(new GroupTime());
-				initChannels(6); //TODO ?
+				initChannels(2);
 				break;
 			}
 		}
@@ -377,7 +377,7 @@ public class Chronotimer {
 	public void DNF(){
 		//I just have a variable to keep track of the which time object was last
 		//added to.
-		if (OnWithEventSet() && newRunCalled) times.get(timeObjNum).dnf();
+		if (on && eventSet && newRunCalled) times.get(timeObjNum).dnf();
 	}
 
 	/** 
@@ -394,11 +394,6 @@ public class Chronotimer {
 			whichRacer--;
 		}
 	}
-
-
-//	public String getRacerTime(int index){
-//		return parseTime(times.)
-//	}
 	
 	/** 
 	 * This method will call the channel's toggle method. 
@@ -412,6 +407,7 @@ public class Chronotimer {
 			channels.get(channelNum - 1).toggle();
 			return true;
 		}
+		
 		else return false;
 	}
 

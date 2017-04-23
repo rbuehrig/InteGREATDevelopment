@@ -490,6 +490,7 @@ public class Simulator {
 				else{
 					textPane.setText("");
 					textPane.setEnabled(false);
+					canToggle = true;
 				}
 
 			}
@@ -709,7 +710,7 @@ public class Simulator {
 
 		//END POPUP MENU CODE
 
-		//******TRIGGER BUTTONS********
+		//******TRIGGER BUTTONS********//
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -739,7 +740,7 @@ public class Simulator {
 						//						textPane.setText("Start time not triggered, please trigger channel 1 "
 						//								+ "before triggering channel 2.");
 						finishedRacer++;
-						
+
 						if (eventType.equals("IND")){
 							textPane.setText(getINDRaceText());
 						}
@@ -750,7 +751,7 @@ public class Simulator {
 
 						}
 					}
-					
+
 				}
 			}
 		});
@@ -884,15 +885,16 @@ public class Simulator {
 		if(qPos + 2 <= timmy.racerNums.size() - 1)
 			queued += timmy.racerNums.get(qPos) + "\n              " + timmy.racerNums.get(qPos+1) + "\n              "
 					+ timmy.racerNums.get(qPos+2) + "\n\n";
-		
+
 		else if(qPos + 1 == timmy.racerNums.size() - 1)
 			queued += timmy.racerNums.get(qPos) + "\n              " + timmy.racerNums.get(qPos+1) + "\n              ---\n\n";
-		
+
 		else if(qPos == timmy.racerNums.size() - 1)
 			queued += timmy.racerNums.get(qPos) + "\n              ---" + "\n              ---\n\n";	
-		
+
 		else if(qPos < timmy.racerNums.size() - 1)
 			queued += "---" + "\n               ---" + "\n               ---\n\n";
+		else queued += "---" + "\n              ---" + "\n              ---\n\n";
 
 
 		String current = "Current:  ";
@@ -901,10 +903,10 @@ public class Simulator {
 			current += timmy.racerNums.get(i);
 		}
 		if (timmy.times.get(0).startTimes.size() ==0) {current += "---";}
-		
+
 		String finished = "\n\nFinished: " + ((timmy.times.get(0).racerTimes.size() > 0) ? (timmy.racerNums.get(finishedRacer - 1) + "   "
 				+ "  " + timmy.parseTime(timmy.times.get(0).racerTimes.peekLast())):("---"));
-		
+
 		String endRace = "\n\nPress FUNCTION to end race.";
 
 
@@ -917,6 +919,7 @@ public class Simulator {
 		long temp = 0;
 		int channel;
 		int trigger;
+		boolean connectCommand = false;
 
 		String secondaryParam = "";
 
@@ -949,6 +952,7 @@ public class Simulator {
 		case "TOG":
 			channel = Integer.parseInt(secondaryParam);
 			canToggle = timer.toggle(channel);
+			connectCommand = true;
 			break;
 		case "TRIG":
 			trigger = Integer.parseInt(secondaryParam);
@@ -992,17 +996,24 @@ public class Simulator {
 		case "SWAP": 
 			timer.swap();
 			break;
-
 		default:
 			System.out.println("You can't do that");
 			break;
 		}
 
-		//Print to console
-		System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+		//Print to console 
+		if (connectCommand){
+			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+			System.out.println(timeStamp + "\tCONN");
+		}
+		else { 
+			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+		}
+		
 
 		//Print to paper tape
 		String currentText = textPane_2.getText();
+
 		int newLineCount = 0;
 		for (int i = 0; i < currentText.length(); i++){
 			if (currentText.charAt(i) == '\n'){newLineCount++;}
@@ -1012,8 +1023,16 @@ public class Simulator {
 						+ lines[6] + "\n" + lines[7] + "\n" + lines[8] + "\n" + lines [9] + "\n";
 			}
 		}
-		textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");
-
+		
+		if (connectCommand){
+			textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");
+			textPane_2.setText(textPane_2.getText() + timeStamp + "\t" + "CONN\n");
+		}
+		else { 
+			textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");
+		}
+		
+		
 		return temp;
 	}
 }
