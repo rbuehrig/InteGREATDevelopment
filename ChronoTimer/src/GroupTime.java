@@ -1,4 +1,6 @@
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 //////////////////////////////////////////
@@ -12,11 +14,13 @@ import java.util.NoSuchElementException;
 //////////////////////////////////////////
 public class GroupTime extends Time{
 	private long groupStartTime;
+	
+	private String timeStamp;
 
 	public GroupTime(){
 		groupStartTime = 0;
-		racerTimes = new ArrayList<Long>();
-		racerNums = new ArrayList<Integer>();
+		racerTimes = new LinkedList<Long>();
+		racerNums = new LinkedList<Integer>();
 	}
 	
 	/**
@@ -27,7 +31,17 @@ public class GroupTime extends Time{
 	 * @return clock.millis()
 	 */
 	public long start(){
-		groupStartTime = System.currentTimeMillis();
+		if(groupStartTime == 0){
+			groupStartTime = System.currentTimeMillis();
+			
+			//stores a time stamp for displaying start time
+			Date date = new Date();
+			timeStamp = date.toString().substring(11,19);
+			
+		}
+		else{
+			//do nothing
+		}
 		return groupStartTime;
 	}
 	
@@ -40,7 +54,12 @@ public class GroupTime extends Time{
 	 * @return start time that was added
 	 */
 	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
-		groupStartTime = start;
+		if(groupStartTime == 0){
+			groupStartTime = start;
+		}
+		else{
+			//do nothing
+		}
 		return groupStartTime;
 	}
 	
@@ -78,6 +97,16 @@ public class GroupTime extends Time{
 			return time;
 		}
 		return 0;
+	}
+	
+	/**
+	 * Stub for GroupTime to implement
+	 * 
+	 * 
+	 * @return groupStartTime
+	 */
+	public String getStartTime(){
+		return timeStamp;
 	}
 	
 	/**
