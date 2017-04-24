@@ -137,6 +137,8 @@ public class Time {
 		return startTimes.size();
 	}
 	
+	
+	
 	/**
 	 * Returns a list of racer times in order of when the start gate was triggered
 	 * 
@@ -145,6 +147,14 @@ public class Time {
 	public LinkedList<Long> getTimes(){
 		return racerTimes;
 	}
+	
+	/**
+	 * Stub for GroupTime to implement
+	 * 
+	 * 
+	 * @return Normal time object -> null; GroupTime -> start time
+	 */
+	public String getStartTime(){return null;}
 	
 	/**
 	 * Parses a string of format "HH:MM:SS.SS" into milliseconds for time calculation

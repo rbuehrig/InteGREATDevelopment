@@ -14,6 +14,7 @@ import java.text.*;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -44,7 +45,7 @@ import javax.swing.text.DefaultCaret;
 //////////////////////////////////////////
 
 public class Simulator {
-	static Chronotimer timmy = new Chronotimer();
+	static Chronotimer timmy; //APRIL 23, 6:30
 	static JTextPane textPane_2;
 	static Date date;
 	static JFrame frame;	
@@ -57,7 +58,6 @@ public class Simulator {
 	static boolean power;
 	static boolean canToggle;
 	static boolean numbersEntered;
-	static int numRacers;
 	static String eventType;
 	static int finishedRacer;
 
@@ -74,6 +74,8 @@ public class Simulator {
 			}
 		}
 		else {
+			//RYLIE APRIL 23, 6:30 PM
+			timmy = new Chronotimer(); //END CHANGE
 			cmdFile = false;
 			menuVersion = 0;
 			functionNumber = 1;
@@ -81,7 +83,6 @@ public class Simulator {
 			power = false;
 			canToggle = true;
 			numbersEntered = false;
-			numRacers = 0;
 			finishedRacer = 0;
 
 			EventQueue.invokeLater(new Runnable() {
@@ -360,23 +361,21 @@ public class Simulator {
 		frame.getContentPane().add(btnSwap);
 
 		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBounds(505, 46, 175, 155);
+		layeredPane.setBounds(495, 46, 185, 155);
 		frame.getContentPane().add(layeredPane);
 
 		textPane_2 = new JTextPane();
 		layeredPane.setLayer(textPane_2, 1);
-		textPane_2.setBounds(17, 6, 140, 130);
+		textPane_2.setBounds(20, 6, 147, 127);
 		textPane_2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		textPane_2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 		textPane_2.setAutoscrolls(true);
-		DefaultCaret caret = (DefaultCaret)textPane_2.getCaret();
-		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 		layeredPane.add(textPane_2);
 
 		JTextPane textPane_1 = new JTextPane();
 		textPane_1.setEditable(false);
 		textPane_1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		textPane_1.setBounds(6, 61, 163, 88);
+		textPane_1.setBounds(6, 61, 173, 88);
 		layeredPane.add(textPane_1);
 
 
@@ -445,12 +444,10 @@ public class Simulator {
 						else if (!items[1].equals("#")) {
 							commands("NUM " + items[1],timmy);
 							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
-							numRacers++;
 						}
 						else {
 							numbersEntered = true;
 							textPane.setText("Waiting for race to start... Toggle channels before starting race. Then press a Start button to begin race.");
-							//functionNumber++;
 						}
 					}
 					else if (functionNumber == 3){
@@ -483,6 +480,7 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				commands("POWER",timmy);
 
+				//RYLIE APRIL 23, 6:30
 				if (power) {
 					textPane.setEnabled(true);
 					textPane.setText(getRaceMenuLines(menuVersion));
@@ -490,9 +488,19 @@ public class Simulator {
 				else{
 					textPane.setText("");
 					textPane.setEnabled(false);
-					canToggle = true;
-				}
 
+					radioButton.setSelected(false); radioButton_1.setSelected(false); 
+					radioButton_2.setSelected(false); radioButton_3.setSelected(false);
+					radioButton_4.setSelected(false); radioButton_5.setSelected(false);
+					radioButton_6.setSelected(false); radioButton_7.setSelected(false);
+
+					menuVersion = 0;
+					canToggle = true;
+					numbersEntered = false;
+					finishedRacer = 0;
+					timmy = new Chronotimer();
+				}
+				//END CHANGES
 			}
 		});
 
@@ -715,16 +723,15 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-
 					if ((commands("TRIG 1",timmy) != 1) && numbersEntered) {
 						if (eventType.equals("IND")){
 							textPane.setText(getINDRaceText());
 						}
-						else if (eventType.equals("PAR")){
-
+						else if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
 						}
 						else if (eventType.equals("GRP")){
-
+							textPane.setText(getGRPRaceText());
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -737,18 +744,16 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if(power){
 					if(commands("TRIG 2",timmy) != -1) {
-						//						textPane.setText("Start time not triggered, please trigger channel 1 "
-						//								+ "before triggering channel 2.");
 						finishedRacer++;
 
 						if (eventType.equals("IND")){
 							textPane.setText(getINDRaceText());
 						}
-						else if (eventType.equals("PAR")){
-
+						else if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
 						}
 						else if (eventType.equals("GRP")){
-
+							textPane.setText(getGRPRaceText());
 						}
 					}
 
@@ -760,13 +765,12 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					commands("TRIG 3",timmy);
-					if (numbersEntered) {
-						textPane.setText("Race in progress... Press Print to output current results. Press FUNCTION "
-								+ "to end race and output results to file.");
+					if ((commands("TRIG 3",timmy) != -1) && numbersEntered) {
+						if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
 						if (functionNumber == 2) functionNumber++;
 					}
-					else {finishedRacer++;}
 				}
 			}
 		});
@@ -775,11 +779,11 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if(commands("TRIG 4",timmy) == -1) {
-						textPane.setText("Start time not triggered, please trigger channel 3 "
-								+ "before triggering channel 4.");
+					if(commands("TRIG 4",timmy) != -1) {
+						if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
 					}
-					else {finishedRacer++;}
 				}
 			}
 		});
@@ -788,10 +792,8 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					commands("TRIG 5",timmy);
-					if (numbersEntered) {
-						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
-								+ "to end race and output results to file.");
+					if ((commands("TRIG 5",timmy) != -1) && numbersEntered) {
+						
 						if (functionNumber == 2) functionNumber++;
 					}
 				}	
@@ -803,8 +805,7 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					if(commands("TRIG 6",timmy) == -1) {
-						textPane.setText("Start time not triggered, please trigger channel 5 "
-								+ "before triggering channel 6.");
+						
 					}
 					else {finishedRacer++;}
 				}
@@ -815,10 +816,9 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(power){
-					commands("TRIG 7",timmy);
-					if (numbersEntered) {
-						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
-								+ "to end race and output results to file.");
+					if ((commands("TRIG 7",timmy) != -1) && numbersEntered) {
+						
+
 						if (functionNumber == 2) functionNumber++;
 					}
 				}
@@ -830,8 +830,7 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					if(commands("TRIG 8",timmy) == -1) {
-						textPane.setText("Start time not triggered, please trigger channel 7 "
-								+ "before triggering channel 8.");
+						
 					}
 					else{finishedRacer++;}
 				}
@@ -852,33 +851,31 @@ public class Simulator {
 		btnSwap.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
-				if(power){commands("SWAP",timmy);}
+				if(power){
+					commands("SWAP",timmy);
+					textPane.setText(getINDRaceText());
+				}
 			}
 		});
 	}
 
 	private static String getRaceMenuLines(int menuSelection){
 		String [] lines = {"Welcome to Chronotimer 1009     \n                                                        "
-				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    ",
+				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    \n\n"
+				+ "*NOTE: Channel operations only work during events.",
 				"Welcome to Chronotimer 1009     \n                                                        "
-						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    ",
+						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    \n\n" 
+						+ "*NOTE: Channel operations only work during events.",
 						"Welcome to Chronotimer 1009     \n                                                        "
-								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < "};
+								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < \n\n"
+								+ "*NOTE: Channel operations only work during events."};
+
 
 		return lines[menuSelection];
 	}
 
 	//Helper for active race text
 	private static String getINDRaceText() {
-		//		String queued =  "Queued:  " + ((timmy.racerNums.size() >= finishedRacer + 2) ? (timmy.racerNums.get(finishedRacer + 1)):("---"))
-		//				+ ((timmy.racerNums.size() >= finishedRacer + 3) ? ("\n              " + timmy.racerNums.get(finishedRacer + 2)):("\n              ---"))
-		//				+ ((timmy.racerNums.size() >= finishedRacer + 4) ? ("\n              " + timmy.racerNums.get(finishedRacer + 3) + "\n\n"):("\n              ---\n\n"))
-		//				
-		//				
-		//				+ "Current: " + (timmy.times.get(0).startTimes.size() > 0  && (finishedRacer > 0 ? 
-		//						(timmy.times.get(0).racerNums.peekLast() != timmy.racerNums.get(finishedRacer - 1)):(false)) ? 
-		//								(" " + timmy.times.get(0).racerNums.peekLast() + "\n\n"):(" ---\n\n"));
-
 		String queued =  "Queued:  ";
 		int qPos =  timmy.times.get(0).startTimes.size() + finishedRacer;//this should calculate the next racer queued
 
@@ -913,6 +910,62 @@ public class Simulator {
 		return queued + current + finished + endRace;
 	}
 
+	private static String getPARRaceText() {
+		String upNext = "Queued: ";
+        int sr = timmy.times.get(0).startTimes.size() + timmy.times.get(1).startTimes.size();
+		int fr = timmy.times.get(0).racerTimes.size() + timmy.times.get(1).racerTimes.size();
+		int qPos = sr + fr;
+		
+		if(qPos + 1 <= timmy.racerNums.size() - 1)
+			upNext += timmy.racerNums.get(qPos) + "\n             " + timmy.racerNums.get(qPos+1);
+		else if(qPos == timmy.racerNums.size() - 1)
+			upNext += timmy.racerNums.get(qPos) + "\n          ---";
+		else 
+			upNext += "---" + "\n              ---";
+
+		String current = "\n\nCurrent: ";
+
+		if(sr >= 2){
+			current += timmy.racerNums.get(fr + sr - 2) + "\n             " + timmy.racerNums.get(fr + sr - 1);
+		}
+		else if ((timmy.times.get(0).startTimes.size() ==1 && timmy.times.get(1).startTimes.size() == 0) ||
+				(timmy.times.get(0).startTimes.size() ==0 && timmy.times.get(1).startTimes.size() == 1)) {current += timmy.racerNums.get(fr + sr-1) + "\n           ---";}
+		
+		else if (timmy.times.get(0).startTimes.size() == 0 && timmy.times.get(1).startTimes.size() == 0){current += "---" + "\n             ---";}
+
+		String finished = "\n\nFinished: ";
+
+		if (2 <= fr){
+			finished += timmy.racerNums.get(fr - 2) + "\n              " + timmy.racerNums.get(fr - 1);
+		}
+		else if(timmy.times.get(0).racerTimes.size() ==1 && timmy.times.get(1).racerTimes.size() == 0 ||
+				timmy.times.get(0).racerTimes.size() ==0 && timmy.times.get(1).racerTimes.size() == 1) {finished += timmy.racerNums.get(fr-1) + "\n          ---";}
+		else if(timmy.times.get(0).racerTimes.size() == 0 && timmy.times.get(1).racerTimes.size() == 0){finished += "---" + "\n              ---";}
+
+		String endRace = "\n\nPress FUNCTION to end race.";
+		
+		return upNext + current + finished + endRace;
+	}
+
+
+	public static String getGRPRaceText(){
+		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n\n";
+		LinkedList<Long> times = timmy.times.get(0).getTimes();
+
+		String nextFinish = "Next Finish Time:  \n";
+
+		if(!times.isEmpty()){
+			nextFinish += "Racer #" + times.size() + ": " + timmy.parseTime(times.getLast()) + "\n\n";
+		}
+		else{
+			nextFinish += "Racer #----: ----\n\n";
+		}
+
+		String endRace = "Press PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
+
+		return start + nextFinish + endRace;
+	}
+
 	private static long commands(String input, Chronotimer timer) {	
 		date = new Date();
 		timeStamp = date.toString().substring(11,19);		
@@ -935,13 +988,12 @@ public class Simulator {
 			break;
 		case "EXIT":
 			timer.powerToggle();
-			//?? programRunning = false;
 			break;
 		case "RESET":
 			timer.reset();
 			break;
 		case "TIME": 
-			//?? param = scan.next();
+			//DO NOTHING
 			break;
 		case "DNF":
 			timer.DNF();
@@ -1002,17 +1054,31 @@ public class Simulator {
 		}
 
 		//Print to console 
-		if (connectCommand){
-			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
-			System.out.println(timeStamp + "\tCONN");
-		}
-		else { 
-			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
-		}
+		System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
 		
+		// Adds CONN after TOG command 
+		// Not using unless CONN can be added to paper tape
+//		if (connectCommand){
+//			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+//			System.out.println(timeStamp + "\tCONN");
+//		}
+//		else { 
+//			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+//		}
+
 
 		//Print to paper tape
 		String currentText = textPane_2.getText();
+		
+		//Attempt at adding a CONN command after TOG
+		//Buggy for now
+//		if (connectCommand){
+//			currentText += timeStamp + "\t" + input + " " + secondaryParam + "\n";
+//			currentText += timeStamp + "\t" + "CONN\n";
+//		}
+//		else { 
+//			currentText += timeStamp + "\t" + input + " " + secondaryParam + "\n";
+//		}
 
 		int newLineCount = 0;
 		for (int i = 0; i < currentText.length(); i++){
@@ -1023,16 +1089,8 @@ public class Simulator {
 						+ lines[6] + "\n" + lines[7] + "\n" + lines[8] + "\n" + lines [9] + "\n";
 			}
 		}
-		
-		if (connectCommand){
-			textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");
-			textPane_2.setText(textPane_2.getText() + timeStamp + "\t" + "CONN\n");
-		}
-		else { 
-			textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");
-		}
-		
-		
+		textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");		
+
 		return temp;
 	}
 }

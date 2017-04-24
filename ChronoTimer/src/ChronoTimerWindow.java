@@ -318,21 +318,21 @@ public class ChronoTimerWindow {
 		frame.getContentPane().add(btnSwap);
         
         JLayeredPane layeredPane = new JLayeredPane();
-        layeredPane.setBounds(505, 46, 175, 155);
+        layeredPane.setBounds(495, 46, 185, 155);
         frame.getContentPane().add(layeredPane);
         
         JTextPane textPane_2 = new JTextPane();
         textPane_2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
         textPane_2.setEditable(false);
         layeredPane.setLayer(textPane_2, 1);
-        textPane_2.setBounds(17, 6, 140, 127);
+        textPane_2.setBounds(20, 6, 147, 127);
         textPane_2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         layeredPane.add(textPane_2);
         
         JTextPane textPane_1 = new JTextPane();
         textPane_1.setEditable(false);
         textPane_1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        textPane_1.setBounds(6, 61, 163, 88);
+        textPane_1.setBounds(6, 61, 173, 88);
         layeredPane.add(textPane_1);
         
         
