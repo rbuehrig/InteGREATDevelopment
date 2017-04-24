@@ -82,6 +82,7 @@ public class Chronotimer {
 	 */
 	private void initChannels(int numChans){
 		for(int i = 0; i < numChans; i+=2){
+			//---CHANG_BLOCK---
 			if(this.eventType == EventType.GRP){
 				times.add(new GroupTime());
 				channels.add(new Channel(true, times.peekLast()));
@@ -92,6 +93,7 @@ public class Chronotimer {
 				channels.add(new Channel(true, times.peekLast()));
 				channels.add(new Channel(false, times.peekLast()));
 			}
+			//---END CHANGE_BLOCK---
 		}
 	}
 
@@ -156,12 +158,13 @@ public class Chronotimer {
 				initChannels(4);
 				eventSet = true;
 				break;
-			
+			//<--CHANGE_BLOCK--->
 			case "GRP":
 				this.eventType = EventType.GRP;
 				initChannels(2); //TODO ?
 				eventSet = true;
 				break;
+			//<--END CHANGE_BLOCK--->
 			}
 		}
 	}
@@ -326,6 +329,7 @@ public class Chronotimer {
 				for (int j = i; j < racerNums.size(); j++){
 					//look through the first time object for the racer number's time
 					
+					//---CHANGE_BLOCK----4/23/17
 					if(this.eventType != EventType.GRP){
 						if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){
 
@@ -340,9 +344,13 @@ public class Chronotimer {
 						}
 					}
 					else if((times.size() >= 1)){
-						racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
-						break;
+						if(i < times.get(0).getTimes().size()){
+							racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
+							break;
+						}
 					}
+					//---END CHANGE_BLOCK---
+					
 					//look through the second time object for the racer number's time
 					if ((times.size() >= 2) && (i < (times.get(1).racerNums.size()))){				
 						if (times.get(1).racerNums.get(j) == racerNums.get(i)){
@@ -470,7 +478,9 @@ public class Chronotimer {
 					channels.get(channelNum - 1).trigger(times.get(0));
 					//group needs to be able to trigger channel 2 
 					//multiple times without triggering channel one.
+					//---CHANGE_BLOCK---
 					if(this.eventType != EventType.GRP) triggerOne = false;
+					//---END CHANGE_BLOCK---
 				}
 				else temp = -1;
 			}
@@ -521,7 +531,9 @@ public class Chronotimer {
 			if ((channels.size() >= 2) && channelNum == 2) {
 				if (triggerOne) {
 					channels.get(channelNum - 1).trigger(times.get(0),tempTime);
-					triggerOne = false;
+					//---CHANGE_BLOCK---
+					if(this.eventType != EventType.GRP) triggerOne = false;
+					//---END CHANGE_BLOCK---
 				}
 				else temp = -1;
 			}

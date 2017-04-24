@@ -146,6 +146,7 @@ public class Time {
 		return racerTimes;
 	}
 	
+	//---CHANGE_BLOCK
 	/**
 	 * Stub for GroupTime to implement
 	 * 
@@ -153,6 +154,7 @@ public class Time {
 	 * @return Normal time object -> null; GroupTime -> start time
 	 */
 	public String getStartTime(){return null;}
+	//---END CHANGE_BLOCK---
 	
 	/**
 	 * Parses a string of format "HH:MM:SS.SS" into milliseconds for time calculation

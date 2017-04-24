@@ -724,7 +724,9 @@ public class Simulator {
 
 						}
 						else if (eventType.equals("GRP")){
+							//---CHANGE_BLOCK---
 							textPane.setText(getGRPRaceText());
+							//---END CHANGE_BLOCK---
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -748,7 +750,9 @@ public class Simulator {
 
 						}
 						else if (eventType.equals("GRP")){
+							//---CHANGE_BLOCK---
 							textPane.setText(getGRPRaceText());
+							//---END CHANGE_BLOCK---
 						}
 					}
 					
@@ -858,12 +862,18 @@ public class Simulator {
 	}
 
 	private static String getRaceMenuLines(int menuSelection){
+		//---CHANGE_BLOCK---
+		//Changed some text here so they don't think the channel enable/disables are broken
 		String [] lines = {"Welcome to Chronotimer 1009     \n                                                        "
-				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    ",
+				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    \n\n"
+				+ "*NOTE: Channel operations only work during events.",
 				"Welcome to Chronotimer 1009     \n                                                        "
-						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    ",
+						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    \n\n" 
+						+ "*NOTE: Channel operations only work during events.",
 						"Welcome to Chronotimer 1009     \n                                                        "
-								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < "};
+								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < \n\n"
+								+ "*NOTE: Channel operations only work during events."};
+		//---END CHANGE_BLOCK---
 
 		return lines[menuSelection];
 	}
@@ -911,7 +921,7 @@ public class Simulator {
 
 		return queued + current + finished + endRace;
 	}
-	
+	//---CHANGE_BLOCK---
 	public static String getGRPRaceText(){
 		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n\n";
 		LinkedList<Long> times = timmy.times.get(0).getTimes();
@@ -919,16 +929,17 @@ public class Simulator {
 		String nextFinish = "Next Finish Time:  \n";
 		
 		if(!times.isEmpty()){
-			nextFinish += "Racer #" + times.size() + ": " + timmy.parseTime(times.getLast());
+			nextFinish += "Racer #" + times.size() + ": " + timmy.parseTime(times.getLast()) + "\n\n";
 		}
 		else{
-			nextFinish += "Racer #----: ----";
+			nextFinish += "Racer #----: ----\n\n";
 		}
 		
-		String endRace = "\n\nPress FUNCTION to end race.";
+		String endRace = "Press PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
 		
 		return start + nextFinish + endRace;
 	}
+	//---END CHANGE_BLOCK---
 
 	private static long commands(String input, Chronotimer timer) {	
 		date = new Date();
