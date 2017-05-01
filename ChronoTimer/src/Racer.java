@@ -20,6 +20,12 @@ public class Racer {
 			return "Racer: " + number + "\nTime: Did not start race.";
 		}
 		
+		//BEGIN MATT CHANGE
+		if(raceTimeLong == ((long) -3)){
+			return "\n\n------Different courses---------\n\n";
+		}
+		//END MATT CHANGE
+		
 		//normal race finish
 		return "Racer: " + number + "\nTime: " + raceTimeString;
 		

@@ -19,7 +19,7 @@ public class GroupTime extends Time{
 
 	public GroupTime(){
 		groupStartTime = 0;
-		racerTimes = new LinkedList<Long>();
+		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
 	}
 	
@@ -77,7 +77,7 @@ public class GroupTime extends Time{
 		}
 		
 		long time = System.currentTimeMillis() - groupStartTime;
-		racerTimes.add(time);
+		finishTimes.add(time);
 		return time;
 	}
 	
@@ -93,7 +93,7 @@ public class GroupTime extends Time{
 
 		if (groupStartTime > 0){
 			long time = finish - groupStartTime;
-			racerTimes.add(time);
+			finishTimes.add(time);
 			return time;
 		}
 		return 0;
@@ -115,7 +115,7 @@ public class GroupTime extends Time{
 	 * @author Nicholas Kopplin
 	 */
 	public void dnf(){
-		racerTimes.add((long)-1);
+		finishTimes.add((long)-1);
 	}
 	
 	/**

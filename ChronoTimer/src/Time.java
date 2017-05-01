@@ -16,14 +16,14 @@ import java.util.Queue;
 
 public class Time {
 	protected LinkedList<Long> startTimes;
-	protected LinkedList<Long> racerTimes;
+	protected LinkedList<Long> finishTimes; //MATT CHANGE 4/30
 	
 	//Keep track of which racer corresponds to time object
 	protected LinkedList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new LinkedList<Long>();
+		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
 	}
 	
@@ -48,7 +48,7 @@ public class Time {
 	 * @param start
 	 * @return start time that was added
 	 */
-	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
+	public long start(long start){ 
 		startTimes.add(start);
 		return start;
 	}
@@ -70,7 +70,7 @@ public class Time {
 		long finish = System.currentTimeMillis();
 		long start = startTimes.pollFirst();
 		long time = finish - start;
-		racerTimes.add(time);
+		finishTimes.add(time);
 		return time;
 	}
 	
@@ -89,7 +89,7 @@ public class Time {
 		if (!startTimes.isEmpty()){
 			long start = startTimes.pollFirst();
 			long time = finish - start;
-			racerTimes.add(time);
+			finishTimes.add(time);
 			return time;
 		}
 		return 0;
@@ -102,7 +102,7 @@ public class Time {
 	 */
 	public void dnf(){
 		startTimes.remove();
-		racerTimes.add((long)-1);
+		finishTimes.add((long)-1);
 	}
 	
 	/**
@@ -145,7 +145,7 @@ public class Time {
 	 * @return LinkedList of racer times
 	 */
 	public LinkedList<Long> getTimes(){
-		return racerTimes;
+		return finishTimes;
 	}
 	
 	/**

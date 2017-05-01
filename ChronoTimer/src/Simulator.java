@@ -45,7 +45,7 @@ import javax.swing.text.DefaultCaret;
 //////////////////////////////////////////
 
 public class Simulator {
-	static Chronotimer timmy; //APRIL 23, 6:30
+	static Chronotimer timmy; 
 	static JTextPane textPane_2;
 	static Date date;
 	static JFrame frame;	
@@ -69,13 +69,13 @@ public class Simulator {
 		catch(FileNotFoundException e){cmdFile = false;}	
 
 		if (cmdFile){
+			timmy = new Chronotimer();
 			while(scan.hasNextLine()){
 				commands(scan.nextLine(),timmy);
 			}
 		}
 		else {
-			//RYLIE APRIL 23, 6:30 PM
-			timmy = new Chronotimer(); //END CHANGE
+			timmy = new Chronotimer();
 			cmdFile = false;
 			menuVersion = 0;
 			functionNumber = 1;
@@ -307,7 +307,6 @@ public class Simulator {
 		frame.getContentPane().add(panel);
 		panel.setLayout(new GridLayout(4, 3));
 
-		//ADDING POPUP MENU HERE 4/18
 		JPopupMenu sensorMenu = new JPopupMenu();
 		JMenuItem pushButton = new JMenuItem("Push Button");
 		JMenuItem elecEye = new JMenuItem("Electric Eye");
@@ -318,8 +317,7 @@ public class Simulator {
 		sensorMenu.add(elecEye);
 		sensorMenu.add(gate);
 		sensorMenu.add(pad);
-		//END OF POPUP MENU CODE
-
+		
 		JButton button_12 = new JButton("1");
 		panel.add(button_12);
 
@@ -366,7 +364,7 @@ public class Simulator {
 
 		textPane_2 = new JTextPane();
 		layeredPane.setLayer(textPane_2, 1);
-		textPane_2.setBounds(20, 6, 147, 127);
+		textPane_2.setBounds(20, 6, 147, 130);
 		textPane_2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		textPane_2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 		textPane_2.setAutoscrolls(true);
@@ -415,19 +413,19 @@ public class Simulator {
 					//menuVersion = 1 --> PAR
 					//menuVersion = 2 -- > GRP
 					if (functionNumber == 1){					
+						commands("NEWRUN",timmy);
+						
 						if (menuVersion == 0) {commands("EVENT IND",timmy); funcCompleted = true; eventType = "IND";}
 						if (menuVersion == 1) {commands("EVENT PARIND",timmy); funcCompleted = true; eventType = "PARIND";}
 						if (menuVersion == 2) {commands("EVENT GRP",timmy); funcCompleted = true; eventType = "GRP";}
 
-						if (funcCompleted) {
-							commands("NEWRUN",timmy);
-							radioButton.setEnabled(true); radioButton_1.setEnabled(true); 
-							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
-							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
-							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
-							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
-							functionNumber++;
-						}
+						radioButton.setEnabled(true); radioButton_1.setEnabled(true); 
+						radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
+						radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
+						radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
+						textPane.setText("Enter racer's number on the keypad. Enter \"#\" by itself to end number input. Press FUNCTION to enter.\n");
+						functionNumber++;
+
 					}
 					else if (functionNumber == 2){
 						String[] items = textPane.getText().split("\n");
@@ -439,11 +437,11 @@ public class Simulator {
 						}
 
 						if(!items[1].equals("#") && nums.length > 1 && badinput){
-							textPane.setText("Invalid racer number! Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
+							textPane.setText("Invalid racer number! Enter racer's number on the keypad. Enter \"#\" by itself to end number input. Press FUNCTION to enter.\n");
 						}
 						else if (!items[1].equals("#")) {
 							commands("NUM " + items[1],timmy);
-							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
+							textPane.setText("Enter racer's number on the keypad. Enter \"#\" by itself to end number input. Press FUNCTION to enter.\n");
 						}
 						else {
 							numbersEntered = true;
@@ -469,6 +467,11 @@ public class Simulator {
 						if (radioButton_3.isSelected()) {radioButton_3.setSelected(false);}
 						if (radioButton_7.isSelected()) {radioButton_7.setSelected(false);}
 
+						
+						canToggle = true;
+						numbersEntered = false;
+						finishedRacer = 0;
+						timmy = new Chronotimer();
 						functionNumber = 1;
 					}
 				}
@@ -480,7 +483,6 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				commands("POWER",timmy);
 
-				//RYLIE APRIL 23, 6:30
 				if (power) {
 					textPane.setEnabled(true);
 					textPane.setText(getRaceMenuLines(menuVersion));
@@ -498,9 +500,9 @@ public class Simulator {
 					canToggle = true;
 					numbersEntered = false;
 					finishedRacer = 0;
+					functionNumber = 1;
 					timmy = new Chronotimer();
 				}
-				//END CHANGES
 			}
 		});
 
@@ -625,14 +627,13 @@ public class Simulator {
 		});
 
 
-		//ADDING RADIO BUTTON POPUP MENUS HERE
 		radioButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					commands("TOG 1",timmy);
 					if (!canToggle) {radioButton.setSelected(false);}
-					else {sensorMenu.show(frame, 299, 86);}
+					else if (canToggle && radioButton.isSelected()){sensorMenu.show(frame, 299, 86);}
 				}
 			}
 		});
@@ -643,7 +644,7 @@ public class Simulator {
 				if (power){
 					commands("TOG 3",timmy);
 					if (!canToggle)  {radioButton_1.setSelected(false);}
-					else {sensorMenu.show(frame, 339, 86);}
+					else if (canToggle && radioButton_1.isSelected()){sensorMenu.show(frame, 339, 86);}
 				}
 			}
 		});
@@ -654,7 +655,7 @@ public class Simulator {
 				if(power){
 					commands("TOG 5",timmy);
 					if (!canToggle)  {radioButton_2.setSelected(false);}
-					else {sensorMenu.show(frame, 379, 86);}
+					else if (canToggle && radioButton_2.isSelected()){sensorMenu.show(frame, 379, 86);}
 				}
 			}
 		});
@@ -665,7 +666,7 @@ public class Simulator {
 				if(power){
 					commands("TOG 7",timmy);
 					if (!canToggle)  {radioButton_3.setSelected(false);}
-					else {sensorMenu.show(frame, 419, 86);}
+					else if (canToggle && radioButton_3.isSelected()){sensorMenu.show(frame, 419, 86);}
 				}
 			}
 		});
@@ -676,7 +677,7 @@ public class Simulator {
 				if(power){
 					commands("TOG 2",timmy);
 					if (!canToggle)  {radioButton_4.setSelected(false);}
-					else {sensorMenu.show(frame, 299, 181);}
+					else if (canToggle && radioButton_4.isSelected()){sensorMenu.show(frame, 299, 181);}
 				}
 			}
 		});
@@ -687,7 +688,7 @@ public class Simulator {
 				if (power){
 					commands("TOG 4",timmy);
 					if (!canToggle)  {radioButton_5.setSelected(false);}
-					else {
+					else if (canToggle && radioButton_5.isSelected()){
 						sensorMenu.show(frame, 339, 181);
 					}
 				}
@@ -700,7 +701,7 @@ public class Simulator {
 				if (power){
 					commands("TOG 6",timmy);
 					if (!canToggle)  {radioButton_6.setSelected(false);}
-					else {sensorMenu.show(frame,379, 181);}
+					else if (canToggle && radioButton_6.isSelected()){sensorMenu.show(frame,379, 181);}
 				}
 			}
 		});
@@ -711,12 +712,10 @@ public class Simulator {
 				if (power){
 					commands("TOG 8",timmy);
 					if (!canToggle) {radioButton_7.setSelected(false);}
-					else {sensorMenu.show(frame, 419, 181);}
+					else if (canToggle && radioButton_7.isSelected()){sensorMenu.show(frame, 419, 181);}
 				}
 			}
 		});
-
-		//END POPUP MENU CODE
 
 		//******TRIGGER BUTTONS********//
 		button.addActionListener(new ActionListener() {
@@ -896,13 +895,21 @@ public class Simulator {
 
 		String current = "Current:  ";
 
-		for(int i = timmy.times.get(0).racerTimes.size(), j=0; j < timmy.times.get(0).startTimes.size(); i++, j++){
-			current += timmy.racerNums.get(i);
+		int marker = 0;
+		
+		for(int i = timmy.times.get(0).finishTimes.size(), j=0; j < timmy.times.get(0).startTimes.size(); i++, j++){
+			if (marker!= 0) {current += ", " + timmy.racerNums.get(i);}
+			else {current += timmy.racerNums.get(i);}
+			marker++;
 		}
-		if (timmy.times.get(0).startTimes.size() ==0) {current += "---";}
-
-		String finished = "\n\nFinished: " + ((timmy.times.get(0).racerTimes.size() > 0) ? (timmy.racerNums.get(finishedRacer - 1) + "   "
-				+ "  " + timmy.parseTime(timmy.times.get(0).racerTimes.peekLast())):("---"));
+		if (timmy.times.get(0).startTimes.size() ==0) {
+			if (marker != 0) {current += ", ---";}
+			else {current += "---";}
+			marker++;
+		}
+		
+		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.racerNums.get(finishedRacer - 1) + "   "
+				+ "  " + timmy.parseTime(timmy.times.get(0).finishTimes.peekLast())):("---"));
 
 		String endRace = "\n\nPress FUNCTION to end race.";
 
@@ -913,7 +920,7 @@ public class Simulator {
 	private static String getPARRaceText() {
 		String upNext = "Queued: ";
         int sr = timmy.times.get(0).startTimes.size() + timmy.times.get(1).startTimes.size();
-		int fr = timmy.times.get(0).racerTimes.size() + timmy.times.get(1).racerTimes.size();
+		int fr = timmy.times.get(0).finishTimes.size() + timmy.times.get(1).finishTimes.size();
 		int qPos = sr + fr;
 		
 		if(qPos + 1 <= timmy.racerNums.size() - 1)
@@ -938,9 +945,9 @@ public class Simulator {
 		if (2 <= fr){
 			finished += timmy.racerNums.get(fr - 2) + "\n              " + timmy.racerNums.get(fr - 1);
 		}
-		else if(timmy.times.get(0).racerTimes.size() ==1 && timmy.times.get(1).racerTimes.size() == 0 ||
-				timmy.times.get(0).racerTimes.size() ==0 && timmy.times.get(1).racerTimes.size() == 1) {finished += timmy.racerNums.get(fr-1) + "\n          ---";}
-		else if(timmy.times.get(0).racerTimes.size() == 0 && timmy.times.get(1).racerTimes.size() == 0){finished += "---" + "\n              ---";}
+		else if(timmy.times.get(0).finishTimes.size() ==1 && timmy.times.get(1).finishTimes.size() == 0 ||
+				timmy.times.get(0).finishTimes.size() ==0 && timmy.times.get(1).finishTimes.size() == 1) {finished += timmy.racerNums.get(fr-1) + "\n          ---";}
+		else if(timmy.times.get(0).finishTimes.size() == 0 && timmy.times.get(1).finishTimes.size() == 0){finished += "---" + "\n              ---";}
 
 		String endRace = "\n\nPress FUNCTION to end race.";
 		

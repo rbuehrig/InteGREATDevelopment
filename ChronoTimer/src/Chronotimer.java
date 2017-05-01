@@ -37,7 +37,7 @@ public class Chronotimer {
 
 	//Keep track of if EVENT is called
 	private boolean eventSet;
-	
+
 	private EventType eventType;
 
 	//keep track of the current trigger number
@@ -46,13 +46,13 @@ public class Chronotimer {
 	//keep track of which time object a start was just added to
 	//Default object is zero (i.e. for IND races)
 	private int timeObjNum;
-	
+
 	//Keep track of times a start trigger has been called
 	//private int timesTriggered = 0;
 
 	private int raceNum;
 
-	
+
 	/**
 	 * Constructor
 	 * 
@@ -85,12 +85,12 @@ public class Chronotimer {
 	public boolean powerToggle(){			
 		on = !on;
 		reset();
-		
+
 		//Allows for a newRun to be called.
 		newRunCalled = false;
 		eventSet = false;
 		eventType = EventType.UNSET;
-		
+
 		return on;
 	}
 
@@ -145,23 +145,31 @@ public class Chronotimer {
 	public void setEvent(String eventType){
 		if (on){
 			switch (eventType){
-			case "IND":
-				this.eventType = EventType.IND;
-				initChannels(2);
-				eventSet = true;
-				break;
+				case "IND":
+					this.eventType = EventType.IND;
+					initChannels(2);
+					eventSet = true;
+					break;
 
-			case "PARIND":
-				this.eventType = EventType.PARIND;
-				initChannels(4);
-				eventSet = true;
-				break;
-			
-			case "GRP":
-				this.eventType = EventType.GRP;
-				initChannels(2);
-				eventSet = true;
-				break;
+				case "PARIND":
+					this.eventType = EventType.PARIND;
+					initChannels(4);
+					eventSet = true;
+					break;
+
+				case "GRP":
+					this.eventType = EventType.GRP;
+					initChannels(2);
+					eventSet = true;
+					break;
+
+				//BEGIN MATT CHANGES 4/30
+				case "PARGRP":
+					this.eventType = EventType.PARGRP;
+					initChannels(8);
+					eventSet = true;
+					break;
+				//END MATT CHANGES 4/30
 			}
 		}
 	}
@@ -182,28 +190,34 @@ public class Chronotimer {
 
 		//This could be wrong
 		//Assumes both Time objects will get the same time for reference
-//		if (on && eventSet && (times.size() > 1)){
-//			times.get(0).start(timeLong);
-//			times.get(1).start(timeLong);
-//		}
-//		else if (on && eventSet && (times.size() == 1)){
-//			times.get(0).start(timeLong);
-//		}
+		//		if (on && eventSet && (times.size() > 1)){
+		//			times.get(0).start(timeLong);
+		//			times.get(1).start(timeLong);
+		//		}
+		//		else if (on && eventSet && (times.size() == 1)){
+		//			times.get(0).start(timeLong);
+		//		}
 		if (on){
 			switch(eventType){
 				case IND:
 					times.get(0).start(timeLong);
 					break;
-				
+
 				case PARIND:
 					times.get(0).start(timeLong);
 					times.get(1).start(timeLong);
 					break;
-					
+
 				case GRP:
 					times.get(0).start(timeLong);
 					break;
-					
+
+				//BEGIN MATT CHANGES 4/30
+				case PARGRP:
+					times.get(0).start(timeLong);	
+					break;
+				//END MATT CHANGES 4/30
+
 				case UNSET:
 					//DO Nothing
 					break;
@@ -236,16 +250,24 @@ public class Chronotimer {
 	public void start(){
 		if (on) trigger(1);
 	}
-	
+
 	/** 
 	 * This Method swaps the next two racers to finish
 	 * 
-	 * @version 1 - 02/26/17
-	 * @author Matthew Buchanan and Rylie Buehrig
+	 * @version 1 - 04/23/17
+	 * @author Nick Kopplin
 	 */
 	public void swap(){
-		if (eventType == EventType.IND) 
+		if (eventType == EventType.IND && times.get(0).startTimes.size() >= 2) {
 			times.get(0).swap();
+
+			int tempRNFirst = racerNums.get(0+times.get(0).finishTimes.size());
+			int tempRNSecond = racerNums.get(1+times.get(0).finishTimes.size());
+			racerNums.set(0+times.get(0).finishTimes.size(), tempRNSecond);
+			racerNums.set(1+times.get(0).finishTimes.size(), tempRNFirst);
+
+			whichRacer = tempRNFirst;
+		}
 	}
 
 	/** 
@@ -281,7 +303,7 @@ public class Chronotimer {
 	 * @author Rylie Buehrig
 	 */
 	public long print(){
-		if (on && eventSet && newRunCalled && times.getFirst().racerTimes.size() > 0) {	
+		if (on && eventSet && newRunCalled && times.getFirst().finishTimes.size() > 0) {	
 			createRacerQueue();
 			dp.add(racers);
 			//print will print results to console
@@ -317,45 +339,100 @@ public class Chronotimer {
 	 * and adds Racer objects with numbers and times.
 	 * 
 	 */
-	private void createRacerQueue(){
+	
+	private void createRacerQueue(){ 
 		if (on && eventSet && newRunCalled)	{
+			//BEGIN MATT CHANGES 4/30
 			racers = new ArrayList<Racer>(racerNums.size());
-			long raceTime;						
+			int finishT = times.get(0).finishTimes.size();
+			int startT = times.get(0).startTimes.size();
 
-			for (int i = 0; i < racerNums.size(); i++){				
-				for (int j = i; j < racerNums.size(); j++){
-					//look through the first time object for the racer number's time
-					if(this.eventType != EventType.GRP){
-						if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){
+			switch (this.eventType){
+				case IND:
+					for(int i = 0; i < racerNums.size(); i++){
+						if(finishT > i)
+							racers.add(new Racer(times.get(0).racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
+						else if(finishT <= i && startT + finishT > i)
+							racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Finish!", -1));
+						else 
+							racers.add(new Racer(racerNums.get(i), "Did not Start!", -2));
+					}
+					break;
+				case PARIND:
+					for(int i = 0; i < racerNums.size(); i++){
+						if(finishT > i)
+							racers.add(new Racer(times.get(0).racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
+						else if(finishT <= i && startT + finishT > i)
+							racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Finish!", -1));
+						else 
+							racers.add(new Racer(racerNums.get(i), "Did not Start!", -2));
+					}
 
-							if (times.get(0).racerNums.get(j) == racerNums.get(i)){
-								raceTime = times.get(0).racerTimes.get(j);
-								racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
-								break;
-							}
-						}
+					racers.add(new Racer(-1, "Racer indicating the end of the first track, and the start of the second track", -3));//maybe change the race class to handle this case, and we can format the print format better
+					//I changed racer to do this
+					for(int i = 0; i < racerNums.size(); i++){
+						if(finishT > i)
+							racers.add(new Racer(times.get(1).racerNums.get(i), parseTime(times.get(1).finishTimes.get(i)), times.get(1).finishTimes.get(i)));
+						else if(finishT <= i && startT + finishT > i)
+							racers.add(new Racer(times.get(1).racerNums.get(i), "Did not Finish!", -1));
+						else 
+							racers.add(new Racer(racerNums.get(i), "Did not Start!", -2));
 					}
-					else if((times.size() >= 1)){
-						if(i < times.get(0).getTimes().size()){
-							racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
-							break;
-						}
+					break;
+				case GRP:
+					for(int i = 0; i < racerNums.size(); i++){
+						if(finishT > i)
+							racers.add(new Racer(i+1, parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
+						else if(finishT <= i && startT + finishT > i)
+							racers.add(new Racer(i+1, "Did not Finish!", -1));
+						else 
+							racers.add(new Racer(i+1, "Did not Start!", -2));
 					}
-					//look through the second time object for the racer number's time
-					if ((times.size() >= 2) && (i < (times.get(1).racerNums.size()))){				
-						if (times.get(1).racerNums.get(j) == racerNums.get(i)){
-							raceTime = times.get(0).racerTimes.get(j);
-							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
-							break;
-						}
-					}
-					//
-					else {
-						racers.add(new Racer(racerNums.get(i),"Did not start.",-2));
-					}
-					//TODO Expand in the future to accommodate more time objects
-				}
+					break;
+				case PARGRP://not yet implemented, but will probably be the same as GRP
+
+				default: //this will never happens as we check to see if event is set
+
 			}
+			//END MATT CHANGES 4/30
+
+			
+			//**********************************************OLD LOGIC******************************************//
+			//			long raceTime;						
+			//
+			//			for (int i = 0; i < racerNums.size(); i++){				
+			//				for (int j = i; j < racerNums.size(); j++){
+			//					//look through the first time object for the racer number's time
+			//					if(this.eventType != EventType.GRP){
+			//						if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){
+			//
+			//							if (times.get(0).racerNums.get(j) == racerNums.get(i)){
+			//								raceTime = times.get(0).racerTimes.get(j);
+			//								racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
+			//								break;
+			//							}
+			//						}
+			//					}
+			//					else if((times.size() >= 1)){
+			//						if(i < times.get(0).getTimes().size()){
+			//							racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
+			//							break;
+			//						}
+			//					}
+			//					//look through the second time object for the racer number's time
+			//					if ((times.size() >= 2) && (i < (times.get(1).racerNums.size()))){				
+			//						if (times.get(1).racerNums.get(j) == racerNums.get(i)){
+			//							raceTime = times.get(0).racerTimes.get(j);
+			//							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
+			//							break;
+			//						}
+			//					}
+			//					//
+			//					else {
+			//						racers.add(new Racer(racerNums.get(i),"Did not start.",-2));
+			//					}
+			//				}
+			//			}
 		}
 	}
 
@@ -410,7 +487,7 @@ public class Chronotimer {
 			whichRacer--;
 		}
 	}
-	
+
 	/** 
 	 * This method will call the channel's toggle method. 
 	 * Arms or disarms the specified channel.
@@ -423,7 +500,7 @@ public class Chronotimer {
 			channels.get(channelNum - 1).toggle();
 			return true;
 		}
-		
+
 		else return false;
 	}
 
@@ -441,21 +518,21 @@ public class Chronotimer {
 		//Need to somehow denote which racer corresponds to which time object and in which order
 		long temp = 0;
 		boolean checkTimesTriggered = true;
-		
+
 		if (on && eventSet && newRunCalled){	
 			//*somewhere we need to see if the triggered channel is odd or even 
 			//*because start and stop methods right now trigger specifically channels
 			//*1 and 2	
-//			if (timesTriggered >= racerNums.size()) {
-//				checkTimesTriggered = false;
-//				temp = -1;
-//			}
-			
+			//			if (timesTriggered >= racerNums.size()) {
+			//				checkTimesTriggered = false;
+			//				temp = -1;
+			//			}
+
 			if ((channels.size() >= 1) && channelNum == 1 && checkTimesTriggered) {
 				channels.get(channelNum - 1).trigger(times.get(0));
 				//if (whichRacer < racerNums.size()) { line 435}
 				times.get(0).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++;
 				timeObjNum = 0;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
@@ -464,7 +541,7 @@ public class Chronotimer {
 			if ((channels.size() >= 3) && channelNum == 3 && checkTimesTriggered) {
 				channels.get(channelNum - 1).trigger(times.get(1));
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++;
 				timeObjNum = 1;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
@@ -484,19 +561,19 @@ public class Chronotimer {
 		//Avoids the issue of having more racer start times than racer numbers
 		long temp = 0;
 		boolean checkTimesTriggered = true;
-		
+
 		if (on && eventSet && newRunCalled) {
 			long tempTime = times.get(0).parseMilli(customTime);
-			
-//			if (timesTriggered >= racerNums.size()) {
-//				checkTimesTriggered = false;
-//				temp = -1;
-//			}
+
+			//			if (timesTriggered >= racerNums.size()) {
+			//				checkTimesTriggered = false;
+			//				temp = -1;
+			//			}
 
 			if ((channels.size() >= 1) && channelNum == 1 && checkTimesTriggered) {
 				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
 				times.get(0).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++; 
 				timeObjNum = 0;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
@@ -505,7 +582,7 @@ public class Chronotimer {
 			if ((channels.size() >= 3) && channelNum == 3 && checkTimesTriggered) {
 				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++;
 				timeObjNum = 1;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
@@ -514,15 +591,17 @@ public class Chronotimer {
 		}
 		return temp;
 	}
-	
+
 	//Private Helpers
+	//MATT CHANGE 4/30
 	private enum EventType {
 		UNSET,
 		IND,
 		PARIND,
-		GRP
+		GRP, 
+		PARGRP
 	}
-	
+
 	private boolean OnWithEventSet() {
 		return on && eventType != EventType.UNSET;
 	}
