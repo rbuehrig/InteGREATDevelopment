@@ -14,6 +14,7 @@ import java.text.*;
 import java.util.Date;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -28,12 +29,14 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
+import javax.swing.MenuElement;
 import javax.swing.SwingConstants;
+import javax.swing.text.DefaultCaret;
 
 //////////////////////////////////////////
 //InteGREAT Development
 //Class: CS 361
-//Authors: Nicholas, Rylie, and Matt
+//Authors: Nicholas 
 //
 //
 //Description: Simulator serves as the 
@@ -42,7 +45,8 @@ import javax.swing.SwingConstants;
 //////////////////////////////////////////
 
 public class Simulator {
-	static Chronotimer timmy = new Chronotimer();
+	static Chronotimer timmy; //APRIL 23, 6:30
+	static JTextPane textPane_2;
 	static Date date;
 	static JFrame frame;	
 	static int menuVersion;
@@ -53,7 +57,9 @@ public class Simulator {
 	static boolean funcCompleted;
 	static boolean power;
 	static boolean canToggle;
-	static boolean startedRace;
+	static boolean numbersEntered;
+	static String eventType;
+	static int finishedRacer;
 
 	public static void main(String[] args) {		
 		try{	
@@ -68,12 +74,16 @@ public class Simulator {
 			}
 		}
 		else {
+			//RYLIE APRIL 23, 6:30 PM
+			timmy = new Chronotimer(); //END CHANGE
 			cmdFile = false;
 			menuVersion = 0;
 			functionNumber = 1;
 			funcCompleted = false;
 			power = false;
 			canToggle = true;
+			numbersEntered = false;
+			finishedRacer = 0;
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -285,15 +295,15 @@ public class Simulator {
 
 		JLabel lblQueueRunning = new JLabel("Queue / Running / Final Time");
 		lblQueueRunning.setFont(new Font("Lucida Grande", Font.PLAIN, 11));
-		lblQueueRunning.setBounds(278, 397, 164, 16);
+		lblQueueRunning.setBounds(270, 397, 164, 16);
 		frame.getContentPane().add(lblQueueRunning);
 
 		JButton btnPrinterPower = new JButton("Print");
-		btnPrinterPower.setBounds(536, 1, 117, 29);
+		btnPrinterPower.setBounds(531, 19, 117, 29);
 		frame.getContentPane().add(btnPrinterPower);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(525, 214, 147, 173);
+		panel.setBounds(519, 214, 147, 173);
 		frame.getContentPane().add(panel);
 		panel.setLayout(new GridLayout(4, 3));
 
@@ -308,7 +318,6 @@ public class Simulator {
 		sensorMenu.add(elecEye);
 		sensorMenu.add(gate);
 		sensorMenu.add(pad);
-		sensorMenu.setEnabled(false);
 		//END OF POPUP MENU CODE
 
 		JButton button_12 = new JButton("1");
@@ -352,20 +361,21 @@ public class Simulator {
 		frame.getContentPane().add(btnSwap);
 
 		JLayeredPane layeredPane = new JLayeredPane();
-		layeredPane.setBounds(525, 42, 141, 148);
+		layeredPane.setBounds(495, 46, 185, 155);
 		frame.getContentPane().add(layeredPane);
 
-		JTextPane textPane_2 = new JTextPane();
-		textPane_2.setEditable(false);
+		textPane_2 = new JTextPane();
 		layeredPane.setLayer(textPane_2, 1);
-		textPane_2.setBounds(18, 16, 104, 107);
+		textPane_2.setBounds(20, 6, 147, 127);
 		textPane_2.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		textPane_2.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
+		textPane_2.setAutoscrolls(true);
 		layeredPane.add(textPane_2);
 
 		JTextPane textPane_1 = new JTextPane();
 		textPane_1.setEditable(false);
 		textPane_1.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-		textPane_1.setBounds(6, 54, 129, 88);
+		textPane_1.setBounds(6, 61, 173, 88);
 		layeredPane.add(textPane_1);
 
 
@@ -393,10 +403,6 @@ public class Simulator {
 							textPane.setText(getRaceMenuLines(menuVersion));
 						}
 					}
-
-					else if (functionNumber == 2){
-
-					}
 				}
 			}
 		});
@@ -409,23 +415,29 @@ public class Simulator {
 					//menuVersion = 1 --> PAR
 					//menuVersion = 2 -- > GRP
 					if (functionNumber == 1){					
-						if (menuVersion == 0) {commands("EVENT IND",timmy); funcCompleted = true;}
-						if (menuVersion == 1) {commands("EVENT PARIND",timmy); funcCompleted = true;}
-						if (menuVersion == 2) {commands("EVENT GRP",timmy); funcCompleted = true;}
+						if (menuVersion == 0) {commands("EVENT IND",timmy); funcCompleted = true; eventType = "IND";}
+						if (menuVersion == 1) {commands("EVENT PARIND",timmy); funcCompleted = true; eventType = "PARIND";}
+						if (menuVersion == 2) {commands("EVENT GRP",timmy); funcCompleted = true; eventType = "GRP";}
 
 						if (funcCompleted) {
 							commands("NEWRUN",timmy);
+							radioButton.setEnabled(true); radioButton_1.setEnabled(true); 
+							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
+							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
+							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
 							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
 							functionNumber++;
 						}
 					}
 					else if (functionNumber == 2){
 						String[] items = textPane.getText().split("\n");
+
 						char[] nums = items[1].toCharArray();
 						boolean badinput = false;
 						for(int i = 0; i < nums.length; i++){
 							if(nums[i] < 48 || nums[i] > 57) badinput = true;
 						}
+
 						if(!items[1].equals("#") && nums.length > 1 && badinput){
 							textPane.setText("Invalid racer number! Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
 						}
@@ -434,19 +446,13 @@ public class Simulator {
 							textPane.setText("Enter racer's number on the keypad. Press FUNCTION to enter. Enter \"#\" by itself to end.\n");
 						}
 						else {
-							radioButton.setEnabled(true); radioButton_1.setEnabled(true);
-							radioButton_2.setEnabled(true); radioButton_3.setEnabled(true);
-							radioButton_4.setEnabled(true); radioButton_5.setEnabled(true);
-							radioButton_6.setEnabled(true); radioButton_7.setEnabled(true);
-							sensorMenu.setEnabled(true);
-							textPane.setText("Waiting for race to start... Toggle channels before starting race, and press a Start button to begin race.");
-							//functionNumber++;
+							numbersEntered = true;
+							textPane.setText("Waiting for race to start... Toggle channels before starting race. Then press a Start button to begin race.");
 						}
 					}
 					else if (functionNumber == 3){
 						commands("ENDRUN",timmy);
 						textPane.setText("Race is completed. See output file for results, or press FUNCTION for a new race.");
-						startedRace = false;
 						functionNumber++;
 					}
 					else if (functionNumber == 4){
@@ -473,9 +479,28 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				commands("POWER",timmy);
-				textPane.setEnabled(true);
-				textPane.setText(getRaceMenuLines(menuVersion));
-				power = true;
+
+				//RYLIE APRIL 23, 6:30
+				if (power) {
+					textPane.setEnabled(true);
+					textPane.setText(getRaceMenuLines(menuVersion));
+				}
+				else{
+					textPane.setText("");
+					textPane.setEnabled(false);
+
+					radioButton.setSelected(false); radioButton_1.setSelected(false); 
+					radioButton_2.setSelected(false); radioButton_3.setSelected(false);
+					radioButton_4.setSelected(false); radioButton_5.setSelected(false);
+					radioButton_6.setSelected(false); radioButton_7.setSelected(false);
+
+					menuVersion = 0;
+					canToggle = true;
+					numbersEntered = false;
+					finishedRacer = 0;
+					timmy = new Chronotimer();
+				}
+				//END CHANGES
 			}
 		});
 
@@ -599,193 +624,116 @@ public class Simulator {
 			}
 		});
 
-		//		radioButton.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 1",timmy);
-		//					if (!canToggle) {radioButton.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_4.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 2",timmy);
-		//					if (!canToggle) {radioButton_4.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_1.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 3",timmy);
-		//					if (!canToggle) {radioButton_1.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_5.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if(power){
-		//					commands("TOG 4",timmy);
-		//					if (!canToggle) {radioButton_5.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_2.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 5",timmy);
-		//					if (!canToggle) {radioButton_2.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_6.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 6",timmy);
-		//					if (!canToggle) {radioButton_6.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_3.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 7",timmy);
-		//					if (!canToggle) {radioButton_3.setSelected(false);}
-		//				}
-		//			}
-		//		});
-
-		//		radioButton_7.addActionListener(new ActionListener() {
-		//			@Override
-		//			public void actionPerformed(ActionEvent e) {
-		//				if (power){
-		//					commands("TOG 8",timmy);
-		//					if (!canToggle) {radioButton_7.setSelected(false);}
-		//				}
-		//			}
-		//		});
 
 		//ADDING RADIO BUTTON POPUP MENUS HERE
-		radioButton.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
 					commands("TOG 1",timmy);
-					if (!canToggle){radioButton.setSelected(false);}
+					if (!canToggle) {radioButton.setSelected(false);}
+					else {sensorMenu.show(frame, 299, 86);}
 				}
 			}
 		});
 
-		radioButton_1.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_1.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 3",timmy);
-					}
-					else {radioButton_1.setSelected(false);}
+					commands("TOG 3",timmy);
+					if (!canToggle)  {radioButton_1.setSelected(false);}
+					else {sensorMenu.show(frame, 339, 86);}
 				}
 			}
 		});
 
-		radioButton_2.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_2.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 5",timmy);
-					}
-					else {radioButton_2.setSelected(false);}
+					commands("TOG 5",timmy);
+					if (!canToggle)  {radioButton_2.setSelected(false);}
+					else {sensorMenu.show(frame, 379, 86);}
 				}
 			}
 		});
 
-		radioButton_3.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_3.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 7",timmy);
-					}
-					else {radioButton_3.setSelected(false);}
+					commands("TOG 7",timmy);
+					if (!canToggle)  {radioButton_3.setSelected(false);}
+					else {sensorMenu.show(frame, 419, 86);}
 				}
 			}
 		});
 
-		radioButton_4.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_4.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if(power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 2",timmy);
-					}
-					else {radioButton_4.setSelected(false);}
+					commands("TOG 2",timmy);
+					if (!canToggle)  {radioButton_4.setSelected(false);}
+					else {sensorMenu.show(frame, 299, 181);}
 				}
 			}
 		});
 
-		radioButton_5.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_5.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if (canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 4",timmy);
+					commands("TOG 4",timmy);
+					if (!canToggle)  {radioButton_5.setSelected(false);}
+					else {
+						sensorMenu.show(frame, 339, 181);
 					}
-					else {radioButton_5.setSelected(false);}
 				}
 			}
 		});
 
-		radioButton_6.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_6.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if(canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 6",timmy);
-					}
-					else {radioButton_6.setSelected(false);}
+					commands("TOG 6",timmy);
+					if (!canToggle)  {radioButton_6.setSelected(false);}
+					else {sensorMenu.show(frame,379, 181);}
 				}
 			}
 		});
 
-		radioButton_7.addMouseListener(new MouseAdapter(){
-			public void mousePressed(MouseEvent evt) {
+		radioButton_7.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
 				if (power){
-					if(canToggle){
-						sensorMenu.show(evt.getComponent(), evt.getX(), evt.getY());
-						commands("TOG 8",timmy);
-					}
-					else {radioButton_7.setSelected(false);}
+					commands("TOG 8",timmy);
+					if (!canToggle) {radioButton_7.setSelected(false);}
+					else {sensorMenu.show(frame, 419, 181);}
 				}
 			}
 		});
 
 		//END POPUP MENU CODE
 
+		//******TRIGGER BUTTONS********//
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					commands("TRIG 1",timmy);
-					if (!startedRace) {
-						startedRace = true;
-						textPane.setText("Race in progress... Press Print to output current results. Press FUNCTION "
-								+ "to end race and output results to file.");
-						functionNumber++;
+					if ((commands("TRIG 1",timmy) != 1) && numbersEntered) {
+						if (eventType.equals("IND")){
+							textPane.setText(getINDRaceText());
+						}
+						else if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
+						else if (eventType.equals("GRP")){
+							textPane.setText(getGRPRaceText());
+						}
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -794,7 +742,22 @@ public class Simulator {
 		button_4.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if(power){if(commands("TRIG 2",timmy) == -1) textPane.setText("Start time not triggered, please start a race before triggering channel 2.");}
+				if(power){
+					if(commands("TRIG 2",timmy) != -1) {
+						finishedRacer++;
+
+						if (eventType.equals("IND")){
+							textPane.setText(getINDRaceText());
+						}
+						else if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
+						else if (eventType.equals("GRP")){
+							textPane.setText(getGRPRaceText());
+						}
+					}
+
+				}
 			}
 		});
 
@@ -802,12 +765,11 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					commands("TRIG 3",timmy);
-					if (!startedRace) {
-						startedRace = true;
-						textPane.setText("Race in progress... Press Print to output current results. Press FUNCTION "
-								+ "to end race and output results to file.");
-						functionNumber++;
+					if ((commands("TRIG 3",timmy) != -1) && numbersEntered) {
+						if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -816,7 +778,13 @@ public class Simulator {
 		button_5.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){if(commands("TRIG 4",timmy) == -1) textPane.setText("Start time not triggered, please start a race before triggering channel 4.");}
+				if (power){
+					if(commands("TRIG 4",timmy) != -1) {
+						if (eventType.equals("PARIND")){
+							textPane.setText(getPARRaceText());
+						}
+					}
+				}
 			}
 		});
 
@@ -824,12 +792,9 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (power){
-					commands("TRIG 5",timmy);
-					if (!startedRace) {
-						startedRace = true;
-						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
-								+ "to end race and output results to file.");
-						functionNumber++;
+					if ((commands("TRIG 5",timmy) != -1) && numbersEntered) {
+						
+						if (functionNumber == 2) functionNumber++;
 					}
 				}	
 			}
@@ -838,7 +803,12 @@ public class Simulator {
 		button_6.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){if(commands("TRIG 6",timmy) == -1) textPane.setText("Start time not triggered, please start a race before triggering channel 6.");}
+				if (power){
+					if(commands("TRIG 6",timmy) == -1) {
+						
+					}
+					else {finishedRacer++;}
+				}
 			}
 		});
 
@@ -846,12 +816,10 @@ public class Simulator {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if(power){
-					commands("TRIG 7",timmy);
-					if (!startedRace) {
-						startedRace = true;
-						textPane.setText("Race in progress... Press Print button to output current results. Press FUNCTION button "
-								+ "to end race and output results to file.");
-						functionNumber++;
+					if ((commands("TRIG 7",timmy) != -1) && numbersEntered) {
+						
+
+						if (functionNumber == 2) functionNumber++;
 					}
 				}
 			}
@@ -860,46 +828,161 @@ public class Simulator {
 		button_7.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){if(commands("TRIG 8",timmy) == -1) textPane.setText("Start time not triggered, please start a race before triggering channel 8.");}
+				if (power){
+					if(commands("TRIG 8",timmy) == -1) {
+						
+					}
+					else{finishedRacer++;}
+				}
 			}
 		});
 
 		btnPrinterPower.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (power){commands("PRINT",timmy);}
+				if (power){
+					if (commands("PRINT",timmy) == -1){
+						textPane.setText("Cannot print because no racers have started.");
+					}
+				}
 			}
 		});
 
 		btnSwap.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e){
-				// Nick will make
-				//if(power){commands("SWAP",timmy);}
+				if(power){
+					commands("SWAP",timmy);
+					textPane.setText(getINDRaceText());
+				}
 			}
 		});
 	}
 
-
 	private static String getRaceMenuLines(int menuSelection){
 		String [] lines = {"Welcome to Chronotimer 1009     \n                                                        "
-				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    ",
+				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    \n\n"
+				+ "*NOTE: Channel operations only work during events.",
 				"Welcome to Chronotimer 1009     \n                                                        "
-						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    ",
+						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    \n\n" 
+						+ "*NOTE: Channel operations only work during events.",
 						"Welcome to Chronotimer 1009     \n                                                        "
-								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < "};
+								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < \n\n"
+								+ "*NOTE: Channel operations only work during events."};
+
 
 		return lines[menuSelection];
 	}
 
+	//Helper for active race text
+	private static String getINDRaceText() {
+		String queued =  "Queued:  ";
+		int qPos =  timmy.times.get(0).startTimes.size() + finishedRacer;//this should calculate the next racer queued
+
+		if(qPos + 2 <= timmy.racerNums.size() - 1)
+			queued += timmy.racerNums.get(qPos) + "\n              " + timmy.racerNums.get(qPos+1) + "\n              "
+					+ timmy.racerNums.get(qPos+2) + "\n\n";
+
+		else if(qPos + 1 == timmy.racerNums.size() - 1)
+			queued += timmy.racerNums.get(qPos) + "\n              " + timmy.racerNums.get(qPos+1) + "\n              ---\n\n";
+
+		else if(qPos == timmy.racerNums.size() - 1)
+			queued += timmy.racerNums.get(qPos) + "\n              ---" + "\n              ---\n\n";	
+
+		else if(qPos < timmy.racerNums.size() - 1)
+			queued += "---" + "\n               ---" + "\n               ---\n\n";
+		else queued += "---" + "\n              ---" + "\n              ---\n\n";
+
+
+		String current = "Current:  ";
+		
+		//BEGIN RYLIE CHANGE
+		int marker = 0;
+		
+		for(int i = timmy.times.get(0).finishTimes.size(), j=0; j < timmy.times.get(0).startTimes.size(); i++, j++){
+			if (marker!= 0) {current += ", " + timmy.racerNums.get(i);}
+			else {current += timmy.racerNums.get(i);}
+			marker++;
+		}
+		if (timmy.times.get(0).startTimes.size() ==0) {
+			if (marker != 0) {current += ", ---";}
+			else {current += "---";}
+			marker++;
+		}
+
+		//END RYLIE CHANGE
+		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.racerNums.get(finishedRacer - 1) + "   "
+				+ "  " + timmy.parseTime(timmy.times.get(0).finishTimes.peekLast())):("---"));
+
+		String endRace = "\n\nPress FUNCTION to end race.";
+
+
+		return queued + current + finished + endRace;
+	}
+
+	private static String getPARRaceText() {
+		String upNext = "Queued: ";
+        int sr = timmy.times.get(0).startTimes.size() + timmy.times.get(1).startTimes.size();
+		int fr = timmy.times.get(0).finishTimes.size() + timmy.times.get(1).finishTimes.size();
+		int qPos = sr + fr;
+		
+		if(qPos + 1 <= timmy.racerNums.size() - 1)
+			upNext += timmy.racerNums.get(qPos) + "\n             " + timmy.racerNums.get(qPos+1);
+		else if(qPos == timmy.racerNums.size() - 1)
+			upNext += timmy.racerNums.get(qPos) + "\n          ---";
+		else 
+			upNext += "---" + "\n              ---";
+
+		String current = "\n\nCurrent: ";
+
+		if(sr >= 2){
+			current += timmy.racerNums.get(fr + sr - 2) + "\n             " + timmy.racerNums.get(fr + sr - 1);
+		}
+		else if ((timmy.times.get(0).startTimes.size() ==1 && timmy.times.get(1).startTimes.size() == 0) ||
+				(timmy.times.get(0).startTimes.size() ==0 && timmy.times.get(1).startTimes.size() == 1)) {current += timmy.racerNums.get(fr + sr-1) + "\n           ---";}
+		
+		else if (timmy.times.get(0).startTimes.size() == 0 && timmy.times.get(1).startTimes.size() == 0){current += "---" + "\n             ---";}
+
+		String finished = "\n\nFinished: ";
+
+		if (2 <= fr){
+			finished += timmy.racerNums.get(fr - 2) + "\n              " + timmy.racerNums.get(fr - 1);
+		}
+		else if(timmy.times.get(0).finishTimes.size() ==1 && timmy.times.get(1).finishTimes.size() == 0 ||
+				timmy.times.get(0).finishTimes.size() ==0 && timmy.times.get(1).finishTimes.size() == 1) {finished += timmy.racerNums.get(fr-1) + "\n          ---";}
+		else if(timmy.times.get(0).finishTimes.size() == 0 && timmy.times.get(1).finishTimes.size() == 0){finished += "---" + "\n              ---";}
+
+		String endRace = "\n\nPress FUNCTION to end race.";
+		
+		return upNext + current + finished + endRace;
+	}
+
+
+	public static String getGRPRaceText(){
+		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n\n";
+		LinkedList<Long> times = timmy.times.get(0).getTimes();
+
+		String nextFinish = "Next Finish Time:  \n";
+
+		if(!times.isEmpty()){
+			nextFinish += "Racer #" + times.size() + ": " + timmy.parseTime(times.getLast()) + "\n\n";
+		}
+		else{
+			nextFinish += "Racer #----: ----\n\n";
+		}
+
+		String endRace = "Press PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
+
+		return start + nextFinish + endRace;
+	}
 
 	private static long commands(String input, Chronotimer timer) {	
 		date = new Date();
-		timeStamp = date.toString().substring(11,19);	
+		timeStamp = date.toString().substring(11,19);		
 		long temp = 0;
-
 		int channel;
 		int trigger;
+		boolean connectCommand = false;
 
 		String secondaryParam = "";
 
@@ -915,13 +998,12 @@ public class Simulator {
 			break;
 		case "EXIT":
 			timer.powerToggle();
-			//?? programRunning = false;
 			break;
 		case "RESET":
 			timer.reset();
 			break;
 		case "TIME": 
-			//?? param = scan.next();
+			//DO NOTHING
 			break;
 		case "DNF":
 			timer.DNF();
@@ -931,7 +1013,8 @@ public class Simulator {
 			break;
 		case "TOG":
 			channel = Integer.parseInt(secondaryParam);
-			timer.toggle(channel);
+			canToggle = timer.toggle(channel);
+			connectCommand = true;
 			break;
 		case "TRIG":
 			trigger = Integer.parseInt(secondaryParam);
@@ -970,17 +1053,54 @@ public class Simulator {
 			timer.setEvent(event);
 			break;
 		case "PRINT":
-			timer.print();
+			temp = timer.print();
 			break;
 		case "SWAP": 
-			//timer.swap();
+			timer.swap();
 			break;
-
 		default:
 			System.out.println("You can't do that");
 			break;
 		}
+
+		//Print to console 
 		System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+		
+		// Adds CONN after TOG command 
+		// Not using unless CONN can be added to paper tape
+//		if (connectCommand){
+//			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+//			System.out.println(timeStamp + "\tCONN");
+//		}
+//		else { 
+//			System.out.println(timeStamp + "\t" + input + " " + secondaryParam);
+//		}
+
+
+		//Print to paper tape
+		String currentText = textPane_2.getText();
+		
+		//Attempt at adding a CONN command after TOG
+		//This is buggy for now
+//		if (connectCommand){
+//			currentText += timeStamp + "\t" + input + " " + secondaryParam + "\n";
+//			currentText += timeStamp + "\t" + "CONN\n";
+//		}
+//		else { 
+//			currentText += timeStamp + "\t" + input + " " + secondaryParam + "\n";
+//		}
+
+		int newLineCount = 0;
+		for (int i = 0; i < currentText.length(); i++){
+			if (currentText.charAt(i) == '\n'){newLineCount++;}
+			if(newLineCount == 10){
+				String[] lines = currentText.split("\n");
+				currentText = lines[1] + "\n" + lines[2] + "\n" + lines[3] + "\n" + lines[4] + "\n" + lines[5] + "\n" 
+						+ lines[6] + "\n" + lines[7] + "\n" + lines[8] + "\n" + lines [9] + "\n";
+			}
+		}
+		textPane_2.setText(currentText + timeStamp + "\t" + input + " " + secondaryParam + "\n");		
+
 		return temp;
 	}
 }
