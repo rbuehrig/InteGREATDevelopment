@@ -59,7 +59,6 @@ public class Simulator {
 	static boolean canToggle;
 	static boolean numbersEntered;
 	static String eventType;
-	static int finishedRacer;
 
 	public static void main(String[] args) {		
 		try{	
@@ -83,7 +82,6 @@ public class Simulator {
 			power = false;
 			canToggle = true;
 			numbersEntered = false;
-			finishedRacer = 0;
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -497,7 +495,6 @@ public class Simulator {
 					menuVersion = 0;
 					canToggle = true;
 					numbersEntered = false;
-					finishedRacer = 0;
 					timmy = new Chronotimer();
 				}
 				//END CHANGES
@@ -744,7 +741,6 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if(power){
 					if(commands("TRIG 2",timmy) != -1) {
-						finishedRacer++;
 
 						if (eventType.equals("IND")){
 							textPane.setText(getINDRaceText());
@@ -807,7 +803,6 @@ public class Simulator {
 					if(commands("TRIG 6",timmy) == -1) {
 						
 					}
-					else {finishedRacer++;}
 				}
 			}
 		});
@@ -832,7 +827,6 @@ public class Simulator {
 					if(commands("TRIG 8",timmy) == -1) {
 						
 					}
-					else{finishedRacer++;}
 				}
 			}
 		});
@@ -877,8 +871,9 @@ public class Simulator {
 	//Helper for active race text
 	private static String getINDRaceText() {
 		String queued =  "Queued:  ";
-		int qPos =  timmy.times.get(0).startTimes.size() + finishedRacer;//this should calculate the next racer queued
-
+		//MATT CHANGE 5/1
+		int qPos =  timmy.times.get(0).startTimes.size() + timmy.times.get(0).finishTimes.size();//this should calculate the next racer queued
+		//MATT CHANGE 5/1
 		if(qPos + 2 <= timmy.racerNums.size() - 1)
 			queued += timmy.racerNums.get(qPos) + "\n              " + timmy.racerNums.get(qPos+1) + "\n              "
 					+ timmy.racerNums.get(qPos+2) + "\n\n";
@@ -911,9 +906,11 @@ public class Simulator {
 		}
 
 		//END RYLIE CHANGE
-		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.racerNums.get(finishedRacer - 1) + "   "
+		
+		//MATT CHANGE 5/1
+		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.times.get(0).racerNums.get(timmy.times.get(0).finishTimes.size()-1) + "   "
 				+ "  " + timmy.parseTime(timmy.times.get(0).finishTimes.peekLast())):("---"));
-
+		//MATT CHANGE 5/1
 		String endRace = "\n\nPress FUNCTION to end race.";
 
 
@@ -932,26 +929,21 @@ public class Simulator {
 			upNext += timmy.racerNums.get(qPos) + "\n          ---";
 		else 
 			upNext += "---" + "\n              ---";
-
-		String current = "\n\nCurrent: ";
-
-		if(sr >= 2){
-			current += timmy.racerNums.get(fr + sr - 2) + "\n             " + timmy.racerNums.get(fr + sr - 1);
-		}
-		else if ((timmy.times.get(0).startTimes.size() ==1 && timmy.times.get(1).startTimes.size() == 0) ||
-				(timmy.times.get(0).startTimes.size() ==0 && timmy.times.get(1).startTimes.size() == 1)) {current += timmy.racerNums.get(fr + sr-1) + "\n           ---";}
 		
-		else if (timmy.times.get(0).startTimes.size() == 0 && timmy.times.get(1).startTimes.size() == 0){current += "---" + "\n             ---";}
+		//MATT START CHANGE 5/1
 
-		String finished = "\n\nFinished: ";
+		String current = "\n\nCurrent on track 1: ";
+		current += (timmy.times.get(0).startTimes.size() > 0) ? timmy.times.get(0).racerNums.get((timmy.times.get(0).startTimes.size() + timmy.times.get(0).finishTimes.size()) - 1) + "" : "---";
+		current += "\nCurrent on track2: ";
+		current += (timmy.times.get(1).startTimes.size() > 0) ? timmy.times.get(1).racerNums.get((timmy.times.get(1).startTimes.size() + timmy.times.get(1).finishTimes.size()) - 1) : "---";
 
-		if (2 <= fr){
-			finished += timmy.racerNums.get(fr - 2) + "\n              " + timmy.racerNums.get(fr - 1);
-		}
-		else if(timmy.times.get(0).finishTimes.size() ==1 && timmy.times.get(1).finishTimes.size() == 0 ||
-				timmy.times.get(0).finishTimes.size() ==0 && timmy.times.get(1).finishTimes.size() == 1) {finished += timmy.racerNums.get(fr-1) + "\n          ---";}
-		else if(timmy.times.get(0).finishTimes.size() == 0 && timmy.times.get(1).finishTimes.size() == 0){finished += "---" + "\n              ---";}
-
+		String finished = "\n\nFinished on track 1: ";
+		finished += (timmy.times.get(0).finishTimes.size() > 0) ? timmy.times.get(0).racerNums.get(timmy.times.get(0).finishTimes.size() -1) + "" : "---";
+		finished += "\nFinished on track 2: ";
+		finished += (timmy.times.get(1).finishTimes.size() > 0) ? timmy.times.get(1).racerNums.get(timmy.times.get(1).finishTimes.size() -1) : "---";
+		
+		//MATT END CHANGE
+		
 		String endRace = "\n\nPress FUNCTION to end race.";
 		
 		return upNext + current + finished + endRace;

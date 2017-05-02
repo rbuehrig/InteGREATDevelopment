@@ -52,6 +52,8 @@ public class Chronotimer {
 
 	private int raceNum;
 
+	private int timesTriggered;//this is tp prevent from clicking trigger more times then you should be able to
+
 	
 	/**
 	 * Constructor
@@ -252,8 +254,16 @@ public class Chronotimer {
 	 * @author Matthew Buchanan and Rylie Buehrig
 	 */
 	public void swap(){
-		if (eventType == EventType.IND) 
+		if (eventType == EventType.IND && times.get(0).startTimes.size() >= 2) {
 			times.get(0).swap();
+
+			int tempRNFirst = racerNums.get(0+times.get(0).finishTimes.size());
+			int tempRNSecond = racerNums.get(1+times.get(0).finishTimes.size());
+			racerNums.set(0+times.get(0).finishTimes.size(), tempRNSecond);
+			racerNums.set(1+times.get(0).finishTimes.size(), tempRNFirst);
+
+			whichRacer = tempRNFirst;
+		}
 	}
 
 	/** 
@@ -333,13 +343,15 @@ public class Chronotimer {
 			
 			switch (this.eventType){
 			case IND:
-				for(int i = 0; i < times.get(0).racerNums.size(); i++){
+				//MATT START CHANGE 5/1
+				for(int i = 0; i < racerNums.size(); i++){
 					if(finishT > i)
-						racers.add(new Racer(times.get(0).racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
+						racers.add(new Racer(racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
 					else if(finishT <= i && startT + finishT > i)
-						racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Finish!", -1));
+						racers.add(new Racer(racerNums.get(i), "Did not Finish!", -1));
 					else 
-						racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Start!", -2));
+						racers.add(new Racer(racerNums.get(i), "Did not Start!", -2));
+					//MATT END CHANGE 5/1
 				}
 				break;
 			case PARIND:
@@ -363,7 +375,7 @@ public class Chronotimer {
 						racers.add(new Racer(times.get(1).racerNums.get(i), "Did not Start!", -2));
 				}
 				break;
-			case GRP:
+			default://GRP and PARGRP do the same thing? Just one time object?
 				for(int i = 0; i < times.get(0).racerNums.size(); i++){
 					if(finishT > i)
 						racers.add(new Racer(i+1, parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
@@ -373,53 +385,9 @@ public class Chronotimer {
 						racers.add(new Racer(i+1, "Did not Start!", -2));
 				}
 				break;
-			case PARGRP://not yet implemented, but will probably be the same as GRP
-			default: //this will never happens as we chack to see if event is set
+
 				
 			}
-			
-			
-			
-			
-			
-			
-			
-//			long raceTime;						
-//
-//			for (int i = 0; i < racerNums.size(); i++){				
-//				for (int j = i; j < racerNums.size(); j++){
-//					//look through the first time object for the racer number's time
-//					if(this.eventType != EventType.GRP){
-//						if ((times.size() >= 1) && (j < (times.get(0).racerNums.size()))){
-//
-//							if (times.get(0).racerNums.get(j) == racerNums.get(i)){
-//								raceTime = times.get(0).racerTimes.get(j);
-//								racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
-//								break;
-//							}
-//						}
-//					}
-//					else if((times.size() >= 1)){
-//						if(i < times.get(0).getTimes().size()){
-//							racers.add(new Racer(i+1,parseTime(times.get(0).getTimes().get(i)),times.get(0).getTimes().get(i)));
-//							break;
-//						}
-//					}
-//					//look through the second time object for the racer number's time
-//					if ((times.size() >= 2) && (i < (times.get(1).racerNums.size()))){				
-//						if (times.get(1).racerNums.get(j) == racerNums.get(i)){
-//							raceTime = times.get(0).racerTimes.get(j);
-//							racers.add(new Racer(racerNums.get(i),parseTime(raceTime),raceTime));
-//							break;
-//						}
-//					}
-//					//
-//					else {
-//						racers.add(new Racer(racerNums.get(i),"Did not start.",-2));
-//					}
-//					//TODO Expand in the future to accommodate more time objects
-//				}
-//			}
 		}
 	}
 
@@ -503,37 +471,37 @@ public class Chronotimer {
 	 */
 	public long trigger(int channelNum){
 		//Need to somehow denote which racer corresponds to which time object and in which order
+		//MATT CHANGE 5/1
+		boolean canStillTrigger = true;
 		long temp = 0;
-		boolean checkTimesTriggered = true;
 		
-		if (on && eventSet && newRunCalled){	
-			//*somewhere we need to see if the triggered channel is odd or even 
-			//*because start and stop methods right now trigger specifically channels
-			//*1 and 2	
-//			if (timesTriggered >= racerNums.size()) {
-//				checkTimesTriggered = false;
-//				temp = -1;
-//			}
+		if(timesTriggered >= racerNums.size()*2) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
+		
+		if (on && eventSet && newRunCalled && canStillTrigger){	
+
 			
-			if ((channels.size() >= 1) && channelNum == 1 && checkTimesTriggered) {
+			if ((channels.size() >= 1) && channelNum == 1) {
 				channels.get(channelNum - 1).trigger(times.get(0));
 				//if (whichRacer < racerNums.size()) { line 435}
 				times.get(0).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++; timesTriggered++;
 				timeObjNum = 0;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
 				channels.get(channelNum - 1).trigger(times.get(0));
+				timesTriggered++;
 			}
-			if ((channels.size() >= 3) && channelNum == 3 && checkTimesTriggered) {
+			if ((channels.size() >= 3) && channelNum == 3) {
 				channels.get(channelNum - 1).trigger(times.get(1));
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++; timesTriggered++;
 				timeObjNum = 1;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
 				channels.get(channelNum - 1).trigger(times.get(1));
+				timesTriggered++;
 			}	
+			//MATT CHANGE 5/1
 		}
 		return temp;
 	}

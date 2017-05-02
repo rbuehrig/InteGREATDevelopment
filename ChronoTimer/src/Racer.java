@@ -21,7 +21,7 @@ public class Racer {
 		}
 		
 		if(raceTimeLong == ((long) -3)){
-			return "\n\n------Different courses---------\n\n";
+			return "\n\n---------Different courses-----------\n\n";
 		}
 		
 		//normal race finish
