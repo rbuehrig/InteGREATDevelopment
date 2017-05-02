@@ -495,6 +495,7 @@ public class Simulator {
 					menuVersion = 0;
 					canToggle = true;
 					numbersEntered = false;
+					functionNumber = 1;
 					timmy = new Chronotimer();
 				}
 				//END CHANGES
@@ -908,7 +909,7 @@ public class Simulator {
 		//END RYLIE CHANGE
 		
 		//MATT CHANGE 5/1
-		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.times.get(0).racerNums.get(timmy.times.get(0).finishTimes.size()-1) + "   "
+		String finished = "\n\nFinished: " + ((timmy.times.get(0).finishTimes.size() > 0) ? (timmy.racerNums.get(timmy.times.get(0).finishTimes.size()-1) + "   "
 				+ "  " + timmy.parseTime(timmy.times.get(0).finishTimes.peekLast())):("---"));
 		//MATT CHANGE 5/1
 		String endRace = "\n\nPress FUNCTION to end race.";
@@ -934,7 +935,7 @@ public class Simulator {
 
 		String current = "\n\nCurrent on track 1: ";
 		current += (timmy.times.get(0).startTimes.size() > 0) ? timmy.times.get(0).racerNums.get((timmy.times.get(0).startTimes.size() + timmy.times.get(0).finishTimes.size()) - 1) + "" : "---";
-		current += "\nCurrent on track2: ";
+		current += "\nCurrent on track 2: ";
 		current += (timmy.times.get(1).startTimes.size() > 0) ? timmy.times.get(1).racerNums.get((timmy.times.get(1).startTimes.size() + timmy.times.get(1).finishTimes.size()) - 1) : "---";
 
 		String finished = "\n\nFinished on track 1: ";

@@ -66,6 +66,7 @@ public class Chronotimer {
 		racers = new ArrayList<Racer>();
 		times = new LinkedList<Time>();
 		dp = new DirectoryProxy();
+		timesTriggered = 0;
 
 		on = false;
 		newRunCalled = false;
@@ -111,6 +112,7 @@ public class Chronotimer {
 		//Add two new channels to array list
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
 		whichRacer = 0;
+		timesTriggered = 0;
 	}
 
 	/**
@@ -287,6 +289,7 @@ public class Chronotimer {
 	 */
 	public void newRun(){
 		if (on) newRunCalled = true;
+		timesTriggered = 0;
 	}
 
 
@@ -358,7 +361,7 @@ public class Chronotimer {
 				for(int i = 0; i < times.get(0).racerNums.size(); i++){
 					if(finishT > i)
 						racers.add(new Racer(times.get(0).racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
-					else if(finishT < i && startT + finishT >= i)
+					else if(finishT <= i && startT + finishT > i)
 						racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Finish!", -1));
 					else 
 						racers.add(new Racer(times.get(0).racerNums.get(i), "Did not Start!", -2));
@@ -369,21 +372,24 @@ public class Chronotimer {
 				for(int i = 0; i < times.get(1).racerNums.size(); i++){
 					if(finishT > i)
 						racers.add(new Racer(times.get(1).racerNums.get(i), parseTime(times.get(1).finishTimes.get(i)), times.get(1).finishTimes.get(i)));
-					else if(finishT < i && startT + finishT >= i)
+					else if(finishT <= i && startT + finishT > i)
 						racers.add(new Racer(times.get(1).racerNums.get(i), "Did not Finish!", -1));
 					else 
 						racers.add(new Racer(times.get(1).racerNums.get(i), "Did not Start!", -2));
 				}
 				break;
-			default://GRP and PARGRP do the same thing? Just one time object?
-				for(int i = 0; i < times.get(0).racerNums.size(); i++){
+			case GRP://GRP and PARGRP do the same thing? Just one time object?
+				for(int i = 0; i < racerNums.size(); i++){
 					if(finishT > i)
 						racers.add(new Racer(i+1, parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
-					else if(finishT < i && startT + finishT >= i)
-						racers.add(new Racer(i+1, "Did not Finish!", -1));
 					else 
-						racers.add(new Racer(i+1, "Did not Start!", -2));
+						racers.add(new Racer(i+1, "Did not Finish!", -1));
+
 				}
+				break;
+			case PARGRP:
+				break;
+				default:
 				break;
 
 				
@@ -475,7 +481,9 @@ public class Chronotimer {
 		boolean canStillTrigger = true;
 		long temp = 0;
 		
-		if(timesTriggered >= racerNums.size()*2) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
+		if(timesTriggered >= racerNums.size()*2 && eventType != EventType.GRP) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
+		else if(timesTriggered >= racerNums.size()+1 && eventType == EventType.GRP)canStillTrigger = false;// 5/2
+		
 		
 		if (on && eventSet && newRunCalled && canStillTrigger){	
 
