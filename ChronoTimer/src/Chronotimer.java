@@ -1,5 +1,14 @@
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.LinkedList;
+
+import com.google.gson.Gson;
 
 //Class: CS 361
 //Authors: Matthew and Rylie
@@ -68,6 +77,8 @@ public class Chronotimer {
 		dp = new DirectoryProxy();
 		timesTriggered = 0;
 		beenTriggered = new boolean[8];//hopefully all defaulted to false;
+		
+		
 
 		on = false;
 		newRunCalled = false;
@@ -325,6 +336,14 @@ public class Chronotimer {
 	public void endRun(){
 		if (newRunCalled) {	
 			createRacerQueue();
+			
+			try {
+				connect(racers);
+
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
 			dp.add(racers);	
 			//end run saves run data to a file
 			dp.print("file",raceNum);
@@ -627,6 +646,65 @@ public class Chronotimer {
 			}
 		}
 		return temp;
+	}
+	
+	//PHIL CHANGE 5/3/17
+	/**Connect to server and sends it an ArrayList of Racers
+	 * 
+	 * @author Philip Kocol
+	 * @param racers
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 * @throws ProtocolException
+	 */
+	private static void connect(ArrayList<Racer> racers) throws MalformedURLException, IOException, ProtocolException {
+		// Client will connect to this location
+		URL site = new URL("http://localhost:8000/sendresults");
+		HttpURLConnection conn = (HttpURLConnection) site.openConnection();			
+
+		// now create a POST request
+		conn.setRequestMethod("POST");
+		conn.setDoOutput(true);
+		conn.setDoInput(true);
+		DataOutputStream out = new DataOutputStream(conn.getOutputStream());
+
+		// build a string that contains JSON from console
+		String content = "";
+		content = getJSON(racers);
+
+		// write out string to output buffer for message
+		out.writeBytes(content);
+		out.flush();
+		out.close();
+
+		System.out.println("Done sent to server");
+
+		InputStreamReader inputStr = new InputStreamReader(conn.getInputStream());
+
+		// string to hold the result of reading in the response
+		StringBuilder sb = new StringBuilder();
+
+		// read the characters from the request byte by byte and build up
+		// the Response
+		int nextChar;
+		while ((nextChar = inputStr.read()) > -1) {
+			sb = sb.append((char) nextChar);
+		}
+		System.out.println("Return String: " + sb);
+	}
+
+	
+	//PHIL CHANGE 5/3/17
+	/**getJSON
+	 * 
+	 * @author Philip Kocol
+	 * @param racers
+	 * @return returns ArrayList racers in Json standardized formatting
+	 */
+	private static String getJSON(ArrayList<Racer> racers) {
+		Gson g = new Gson();
+		String json = g.toJson(racers);
+		return json;
 	}
 	
 	//Private Helpers
