@@ -15,7 +15,7 @@ public class Printer {
 	PrintStream output;
 
 	private void paperTape(ArrayList<Racer> racers, int rNum){
-		int height = ((racers.size()-1) * 100) + 120;
+		int height = ((racers.size()-1) * 75) + 100;
 
 		JFrame frame = new JFrame();
 		frame.setResizable(true);
@@ -33,8 +33,6 @@ public class Printer {
 		frame.add(results);
 		
 		String output = "";
-		
-		output += "----------------------------------\n";
 
 		for (Racer r: racers){
 			output += r.toString();

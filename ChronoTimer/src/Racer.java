@@ -21,11 +21,14 @@ public class Racer {
 		}
 		
 		if(raceTimeLong == ((long) -3)){
-			return "\n\n---------Second Track-----------\n\n";
+			return "\n\n------------Second Track------------\n";
 		}
 		
 		if(raceTimeLong == ((long) -4)){
-			return "---------First Track-----------\n";
+			return "------------First Track--------------\n";
+		}
+		if(raceTimeLong == ((long) -5)){
+			return "\n\n---------------DNS---------------\n";
 		}
 		
 		//normal race finish

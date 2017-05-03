@@ -95,6 +95,10 @@ public class Time {
 		return 0;
 	}
 	
+	public long finish(int n){
+		return -1;
+	}
+	
 	/**
 	 * Sets next racer time to -1, signifying a DNF or "did not finish"
 	 * 

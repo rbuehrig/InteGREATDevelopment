@@ -1,7 +1,5 @@
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 //////////////////////////////////////////
 //InteGREAT Development
@@ -82,6 +80,18 @@ public class GroupTime extends Time{
 		return time;
 	}
 	
+	public long finish(int channel){
+		if(groupStartTime == 0){
+			System.out.println("Race Has Not Started.");
+			return -1;
+		}
+		
+		long time = System.currentTimeMillis() - groupStartTime;
+		finishTimes.remove(channel-1);
+		finishTimes.add(channel-1, time);
+		return time;
+	}
+	
 	/**
 	 * Overload for finish()
 	 * Allows for user suppplied finish time
@@ -90,6 +100,7 @@ public class GroupTime extends Time{
 	 * @param finish
 	 * @return finish time of next racer
 	 */
+	@Override
 	public long finish(long finish){
 
 		if (groupStartTime > 0){
@@ -131,7 +142,8 @@ public class GroupTime extends Time{
 	 * @return -1, because we won't know how many racers there are until all have finished
 	 */
 	public int getNumTimes(){
-		return -1;
+		if (groupStartTime == 0) return 0;
+		else return 1;
 	}
 	
 }

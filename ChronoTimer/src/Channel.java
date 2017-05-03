@@ -17,7 +17,7 @@ public class Channel {
 	 * true = 'start' channel
 	 * false = 'finish' channel
 	 */
-	public Channel(boolean type, Time time){
+	public Channel(boolean type){
 		armed = false;
 		this.type = type;
 		//this.time = time;
@@ -36,7 +36,7 @@ public class Channel {
 	 * If it's a start channel, creates and returns a new Start time within specified Time object
 	 * If it's a finish channel, calculates and returns the time for the next finishing racer
 	 */
-	public long trigger(Time obj){
+	public long trigger(Time obj, int chan){
 		if(armed = false){
 			System.out.println("Channel is not active");
 			return -1;
@@ -46,7 +46,9 @@ public class Channel {
 			return obj.start();
 		}
 		else{
-			return obj.finish();
+			if(obj instanceof GroupTime)
+			return obj.finish(chan);
+			else return obj.finish();
 		}
 	}
 	

@@ -310,15 +310,19 @@ public class Simulator {
 
 		//ADDING POPUP MENU HERE 4/18
 		JPopupMenu sensorMenu = new JPopupMenu();
+		JPopupMenu GRPsensorMenu = new JPopupMenu();
 		JMenuItem pushButton = new JMenuItem("Push Button");
 		JMenuItem elecEye = new JMenuItem("Electric Eye");
 		JMenuItem gate = new JMenuItem("Gate Sensor");
 		JMenuItem pad = new JMenuItem("Pad Sensor");
+		JMenuItem pad1 = new JMenuItem("Pad Sensor");
 
 		sensorMenu.add(pushButton);
 		sensorMenu.add(elecEye);
 		sensorMenu.add(gate);
 		sensorMenu.add(pad);
+		
+		GRPsensorMenu.add(pad1);
 		//END OF POPUP MENU CODE
 
 		JButton button_12 = new JButton("1");
@@ -635,7 +639,13 @@ public class Simulator {
 				if (power){
 					commands("TOG 1",timmy);
 					if (!canToggle) {radioButton.setSelected(false);}
-					else {sensorMenu.show(frame, 299, 86);}
+					else {
+						switch(timmy.eventType){
+						case PARGRP: GRPsensorMenu.show(frame, 299, 86);
+							break;
+							default: sensorMenu.show(frame, 299, 86);
+							break;}
+					}
 				}
 			}
 		});
@@ -646,7 +656,13 @@ public class Simulator {
 				if (power){
 					commands("TOG 3",timmy);
 					if (!canToggle)  {radioButton_1.setSelected(false);}
-					else {sensorMenu.show(frame, 339, 86);}
+					else {
+						switch(timmy.eventType){
+						case PARGRP: GRPsensorMenu.show(frame, 339, 86);
+							break;
+							default: sensorMenu.show(frame, 339, 86);
+							break;}
+					}
 				}
 			}
 		});
@@ -657,7 +673,7 @@ public class Simulator {
 				if(power){
 					commands("TOG 5",timmy);
 					if (!canToggle)  {radioButton_2.setSelected(false);}
-					else {sensorMenu.show(frame, 379, 86);}
+					else {GRPsensorMenu.show(frame, 379, 86);}
 				}
 			}
 		});
@@ -668,7 +684,7 @@ public class Simulator {
 				if(power){
 					commands("TOG 7",timmy);
 					if (!canToggle)  {radioButton_3.setSelected(false);}
-					else {sensorMenu.show(frame, 419, 86);}
+					else {GRPsensorMenu.show(frame, 419, 86);}
 				}
 			}
 		});
@@ -679,7 +695,13 @@ public class Simulator {
 				if(power){
 					commands("TOG 2",timmy);
 					if (!canToggle)  {radioButton_4.setSelected(false);}
-					else {sensorMenu.show(frame, 299, 181);}
+					else {
+						switch(timmy.eventType){
+						case PARGRP: GRPsensorMenu.show(frame, 299, 181);
+							break;
+							default: sensorMenu.show(frame, 299, 181);
+							break;}
+				}
 				}
 			}
 		});
@@ -691,7 +713,12 @@ public class Simulator {
 					commands("TOG 4",timmy);
 					if (!canToggle)  {radioButton_5.setSelected(false);}
 					else {
-						sensorMenu.show(frame, 339, 181);
+						switch(timmy.eventType){
+						case PARGRP: GRPsensorMenu.show(frame, 339, 181);
+							break;
+							default: sensorMenu.show(frame, 339, 181);
+							break;
+						}
 					}
 				}
 			}
@@ -703,7 +730,7 @@ public class Simulator {
 				if (power){
 					commands("TOG 6",timmy);
 					if (!canToggle)  {radioButton_6.setSelected(false);}
-					else {sensorMenu.show(frame,379, 181);}
+					else {GRPsensorMenu.show(frame,379, 181);}
 				}
 			}
 		});
@@ -714,7 +741,7 @@ public class Simulator {
 				if (power){
 					commands("TOG 8",timmy);
 					if (!canToggle) {radioButton_7.setSelected(false);}
-					else {sensorMenu.show(frame, 419, 181);}
+					else {GRPsensorMenu.show(frame, 419, 181);}
 				}
 			}
 		});
@@ -739,6 +766,8 @@ public class Simulator {
 						}
 						else if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(1));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -763,6 +792,8 @@ public class Simulator {
 						}						
 						else if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(2));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 					}
 
@@ -780,6 +811,8 @@ public class Simulator {
 						}
 						else if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(3));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -797,6 +830,8 @@ public class Simulator {
 						}
 						else if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(4));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 					}
 				}
@@ -810,6 +845,8 @@ public class Simulator {
 					if ((commands("TRIG 5",timmy) != -1) && numbersEntered) {
 						if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(5));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -824,6 +861,8 @@ public class Simulator {
 					if(commands("TRIG 6",timmy) == -1) {
 						if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(6));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 					}
 				}
@@ -837,6 +876,8 @@ public class Simulator {
 					if ((commands("TRIG 7",timmy) != -1) && numbersEntered) {
 						if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(7));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 
 						if (functionNumber == 2) functionNumber++;
@@ -852,6 +893,8 @@ public class Simulator {
 					if(commands("TRIG 8",timmy) == -1) {
 						if(eventType.equals("PARGRP")){
 							textPane.setText(getPARGRPRaceText(8));
+							Font myFont = new Font(Font.MONOSPACED, 0, 10);
+							textPane.setFont(myFont);
 						}
 					}
 				}
@@ -1001,13 +1044,18 @@ public class Simulator {
 	
 	public static String getPARGRPRaceText(int whichTrig){//Matt made method 5/2
 		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n";
-		if(timmy.times.get(0).getTimes().size() != 0){
-			didTheyFinish[whichTrig] = timmy.parseTime(timmy.times.get(0).getTimes().getLast()); //didTheyFinished all initialized to ---
+		if(timmy.times.get(0).finishTimes.get(whichTrig-1) != -1 && didTheyFinish[whichTrig - 1].equals("---")){
+			didTheyFinish[whichTrig - 1] = timmy.parseTime(timmy.times.get(0).finishTimes.get(whichTrig-1)); //didTheyFinished all initialized to ---
 		}
 		String posNums = "Finish Times:\n";
 		
 		for(int i = 0; i < 4; i++){
-			posNums += "Racer " + i+1 + ": " + didTheyFinish[i] + "      Racer " + i+5 + ": " + didTheyFinish[i+4] + "\n";
+			if (didTheyFinish[i].equals("---")) {
+				posNums += "R" + (i+1) + ": " + didTheyFinish[i] + "       R" + (i+5) + ": " + didTheyFinish[i+4] + "\n";
+			} else {
+				posNums += "R" + (i+1) + ": " + didTheyFinish[i] + " R" + (i+5) + ": " + didTheyFinish[i+4] + "\n";
+			}
+			
 		}
 		
 		String endRace = "\nPress PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
