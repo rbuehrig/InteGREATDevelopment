@@ -16,14 +16,14 @@ import java.util.Queue;
 
 public class Time {
 	protected LinkedList<Long> startTimes;
-	protected LinkedList<Long> racerTimes;
+	protected LinkedList<Long> finishTimes;//////////////////matt name change
 	
 	//Keep track of which racer corresponds to time object
 	protected LinkedList<Integer> racerNums;
 	
 	public Time(){
 		startTimes = new LinkedList<Long>();
-		racerTimes = new LinkedList<Long>();
+		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
 	}
 	
@@ -70,7 +70,7 @@ public class Time {
 		long finish = System.currentTimeMillis();
 		long start = startTimes.pollFirst();
 		long time = finish - start;
-		racerTimes.add(time);
+		finishTimes.add(time);
 		return time;
 	}
 	
@@ -89,7 +89,7 @@ public class Time {
 		if (!startTimes.isEmpty()){
 			long start = startTimes.pollFirst();
 			long time = finish - start;
-			racerTimes.add(time);
+			finishTimes.add(time);
 			return time;
 		}
 		return 0;
@@ -102,7 +102,7 @@ public class Time {
 	 */
 	public void dnf(){
 		startTimes.remove();
-		racerTimes.add((long)-1);
+		finishTimes.add((long)-1);
 	}
 	
 	/**
@@ -137,16 +137,17 @@ public class Time {
 		return startTimes.size();
 	}
 	
+	
+	
 	/**
 	 * Returns a list of racer times in order of when the start gate was triggered
 	 * 
 	 * @return LinkedList of racer times
 	 */
 	public LinkedList<Long> getTimes(){
-		return racerTimes;
+		return finishTimes;
 	}
 	
-	//---CHANGE_BLOCK
 	/**
 	 * Stub for GroupTime to implement
 	 * 
@@ -154,7 +155,6 @@ public class Time {
 	 * @return Normal time object -> null; GroupTime -> start time
 	 */
 	public String getStartTime(){return null;}
-	//---END CHANGE_BLOCK---
 	
 	/**
 	 * Parses a string of format "HH:MM:SS.SS" into milliseconds for time calculation

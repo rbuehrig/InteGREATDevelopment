@@ -15,14 +15,13 @@ import java.util.NoSuchElementException;
 public class GroupTime extends Time{
 	private long groupStartTime;
 	
-	//---CHANGE_BLOCK--
 	private String timeStamp;
-	//----
 
 	public GroupTime(){
 		groupStartTime = 0;
-		racerTimes = new LinkedList<Long>();
+		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
+		timeStamp = "";
 	}
 	
 	/**
@@ -33,7 +32,6 @@ public class GroupTime extends Time{
 	 * @return clock.millis()
 	 */
 	public long start(){
-		//----CHANGE_BLOCK---
 		if(groupStartTime == 0){
 			groupStartTime = System.currentTimeMillis();
 			
@@ -45,7 +43,6 @@ public class GroupTime extends Time{
 		else{
 			//do nothing
 		}
-		//----
 		return groupStartTime;
 	}
 	
@@ -58,14 +55,12 @@ public class GroupTime extends Time{
 	 * @return start time that was added
 	 */
 	public long start(long start){ //change - should this check if there already is a start time and then remove it if there is and just reset the start time
-		//---CHANGE_BLOCK----
 		if(groupStartTime == 0){
 			groupStartTime = start;
 		}
 		else{
 			//do nothing
 		}
-		//----
 		return groupStartTime;
 	}
 	
@@ -83,7 +78,7 @@ public class GroupTime extends Time{
 		}
 		
 		long time = System.currentTimeMillis() - groupStartTime;
-		racerTimes.add(time);
+		finishTimes.add(time);
 		return time;
 	}
 	
@@ -99,12 +94,12 @@ public class GroupTime extends Time{
 
 		if (groupStartTime > 0){
 			long time = finish - groupStartTime;
-			racerTimes.add(time);
+			finishTimes.add(time);
 			return time;
 		}
 		return 0;
 	}
-	//---CHANGE_BLOCK----
+	
 	/**
 	 * Stub for GroupTime to implement
 	 * 
@@ -114,7 +109,6 @@ public class GroupTime extends Time{
 	public String getStartTime(){
 		return timeStamp;
 	}
-	//---END CHANGE_BLOCK
 	
 	/**
 	 * Sets next racer time to -1, signifying a DNF or "did not finish"
@@ -122,7 +116,7 @@ public class GroupTime extends Time{
 	 * @author Nicholas Kopplin
 	 */
 	public void dnf(){
-		racerTimes.add((long)-1);
+		finishTimes.add((long)-1);
 	}
 	
 	/**

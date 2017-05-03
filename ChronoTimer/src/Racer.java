@@ -20,9 +20,19 @@ public class Racer {
 			return "Racer: " + number + "\nTime: Did not start race.";
 		}
 		
+		if(raceTimeLong == ((long) -3)){
+			return "\n\n---------Second Track-----------\n\n";
+		}
+		
+		if(raceTimeLong == ((long) -4)){
+			return "---------First Track-----------\n";
+		}
+		
 		//normal race finish
 		return "Racer: " + number + "\nTime: " + raceTimeString;
 		
 		//possible case for if a racer did not start?
 	}
+	
+	
 }
