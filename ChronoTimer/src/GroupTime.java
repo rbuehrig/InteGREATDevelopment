@@ -21,6 +21,7 @@ public class GroupTime extends Time{
 		groupStartTime = 0;
 		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
+		timeStamp = "";
 	}
 	
 	/**

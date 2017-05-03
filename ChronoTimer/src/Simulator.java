@@ -59,6 +59,7 @@ public class Simulator {
 	static boolean canToggle;
 	static boolean numbersEntered;
 	static String eventType;
+	static String[] didTheyFinish;//Matt change 5/2
 
 	public static void main(String[] args) {		
 		try{	
@@ -82,6 +83,8 @@ public class Simulator {
 			power = false;
 			canToggle = true;
 			numbersEntered = false;
+			didTheyFinish = new String[8];
+			
 
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
@@ -396,7 +399,7 @@ public class Simulator {
 			public void mousePressed(MouseEvent e) {        		
 				if(power){
 					if (functionNumber == 1){
-						if (menuVersion + 1< 3) {
+						if (menuVersion + 1< 4) {
 							menuVersion++;
 							textPane.setText(getRaceMenuLines(menuVersion));
 						}
@@ -411,12 +414,14 @@ public class Simulator {
 				if (power){
 					//menuVersion = 0 --> IND
 					//menuVersion = 1 --> PAR
-					//menuVersion = 2 -- > GRP
+					//menuVersion = 2 --> GRP
+					//menuVersion = 3 --> PARGRP
 					if (functionNumber == 1){					
 						if (menuVersion == 0) {commands("EVENT IND",timmy); funcCompleted = true; eventType = "IND";}
 						if (menuVersion == 1) {commands("EVENT PARIND",timmy); funcCompleted = true; eventType = "PARIND";}
 						if (menuVersion == 2) {commands("EVENT GRP",timmy); funcCompleted = true; eventType = "GRP";}
-
+						if (menuVersion == 3) {commands("EVENT PARGRP",timmy); funcCompleted = true; eventType = "PARGRP";for(int i = 0; i < 8; i++)didTheyFinish[i] = "---";}//Matt change 5/2
+						
 						if (funcCompleted) {
 							commands("NEWRUN",timmy);
 							radioButton.setEnabled(true); radioButton_1.setEnabled(true); 
@@ -717,6 +722,7 @@ public class Simulator {
 		//END POPUP MENU CODE
 
 		//******TRIGGER BUTTONS********//
+		//Matt added PARGRP if statements to each TRIG action listener
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -730,6 +736,9 @@ public class Simulator {
 						}
 						else if (eventType.equals("GRP")){
 							textPane.setText(getGRPRaceText());
+						}
+						else if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(1));
 						}
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -751,6 +760,9 @@ public class Simulator {
 						}
 						else if (eventType.equals("GRP")){
 							textPane.setText(getGRPRaceText());
+						}						
+						else if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(2));
 						}
 					}
 
@@ -766,6 +778,9 @@ public class Simulator {
 						if (eventType.equals("PARIND")){
 							textPane.setText(getPARRaceText());
 						}
+						else if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(3));
+						}
 						if (functionNumber == 2) functionNumber++;
 					}
 				}
@@ -780,6 +795,9 @@ public class Simulator {
 						if (eventType.equals("PARIND")){
 							textPane.setText(getPARRaceText());
 						}
+						else if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(4));
+						}
 					}
 				}
 			}
@@ -790,7 +808,9 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					if ((commands("TRIG 5",timmy) != -1) && numbersEntered) {
-						
+						if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(5));
+						}
 						if (functionNumber == 2) functionNumber++;
 					}
 				}	
@@ -802,7 +822,9 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					if(commands("TRIG 6",timmy) == -1) {
-						
+						if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(6));
+						}
 					}
 				}
 			}
@@ -813,7 +835,9 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if(power){
 					if ((commands("TRIG 7",timmy) != -1) && numbersEntered) {
-						
+						if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(7));
+						}
 
 						if (functionNumber == 2) functionNumber++;
 					}
@@ -826,7 +850,9 @@ public class Simulator {
 			public void actionPerformed(ActionEvent e) {
 				if (power){
 					if(commands("TRIG 8",timmy) == -1) {
-						
+						if(eventType.equals("PARGRP")){
+							textPane.setText(getPARGRPRaceText(8));
+						}
 					}
 				}
 			}
@@ -856,14 +882,18 @@ public class Simulator {
 
 	private static String getRaceMenuLines(int menuSelection){
 		String [] lines = {"Welcome to Chronotimer 1009     \n                                                        "
-				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    \n\n"
+				+ "\nPlease select race type: \nIndividual  < \nParallel    \nGroup    \nParallel Group    \n\n"
 				+ "*NOTE: Channel operations only work during events.",
 				"Welcome to Chronotimer 1009     \n                                                        "
-						+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    \n\n" 
-						+ "*NOTE: Channel operations only work during events.",
-						"Welcome to Chronotimer 1009     \n                                                        "
-								+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < \n\n"
-								+ "*NOTE: Channel operations only work during events."};
+				+ "\nPlease select race type: \nIndividual    \nParallel  < \nGroup    \nParallel Group    \n\n" 
+				+ "*NOTE: Channel operations only work during events.",
+				"Welcome to Chronotimer 1009     \n                                                        "
+				+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup  < \nParallel Group    \n\n"
+				+ "*NOTE: Channel operations only work during events.",
+				"Welcome to Chronotimer 1009     \n                                                        "
+				+ "\nPlease select race type: \nIndividual    \nParallel    \nGroup    \nParallel Group  < \n\n"
+				+ "*NOTE: Channel operations only work during events."
+		};
 
 
 		return lines[menuSelection];
@@ -967,6 +997,22 @@ public class Simulator {
 		String endRace = "Press PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
 
 		return start + nextFinish + endRace;
+	}
+	
+	public static String getPARGRPRaceText(int whichTrig){//Matt made method 5/2
+		String start = "Start Time:\t" + timmy.times.get(0).getStartTime() + "\n\n";
+		if(timmy.times.get(0).getTimes().size() != 0){
+			didTheyFinish[whichTrig] = timmy.parseTime(timmy.times.get(0).getTimes().getLast()); //didTheyFinished all initialized to ---
+		}
+		String posNums = "Finish Times:\n";
+		
+		for(int i = 0; i < 4; i++){
+			posNums += "Racer " + i+1 + ": " + didTheyFinish[i] + "      Racer " + i+5 + ": " + didTheyFinish[i+4] + "\n";
+		}
+		
+		String endRace = "\nPress PRINT at any time to print race results.\n\nPress FUNCTION to end race.";
+		
+		return start + posNums + endRace;
 	}
 
 	private static long commands(String input, Chronotimer timer) {	

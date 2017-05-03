@@ -53,6 +53,8 @@ public class Chronotimer {
 	private int raceNum;
 
 	private int timesTriggered;//this is tp prevent from clicking trigger more times then you should be able to
+	
+	boolean[] beenTriggered = new boolean[8];
 
 	
 	/**
@@ -67,6 +69,7 @@ public class Chronotimer {
 		times = new LinkedList<Time>();
 		dp = new DirectoryProxy();
 		timesTriggered = 0;
+		beenTriggered = new boolean[8];//hopefully all defaulted to false;
 
 		on = false;
 		newRunCalled = false;
@@ -113,6 +116,7 @@ public class Chronotimer {
 		channels = new ArrayList<Channel>(NUM_CHANNELS);
 		whichRacer = 0;
 		timesTriggered = 0;
+		beenTriggered = new boolean[8];//hopefully all defaulted to false;
 	}
 
 	/**
@@ -358,6 +362,7 @@ public class Chronotimer {
 				}
 				break;
 			case PARIND:
+				racers.add(new Racer(-1, "first track", -4));//Matt change 5/2
 				for(int i = 0; i < times.get(0).racerNums.size(); i++){
 					if(finishT > i)
 						racers.add(new Racer(times.get(0).racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
@@ -387,7 +392,19 @@ public class Chronotimer {
 
 				}
 				break;
-			case PARGRP:
+			case PARGRP://Matt change 5/2
+				boolean found;
+				for(int i = 0; i < 8; i++){
+					found = false;
+					for(int j = 0; j < times.get(0).getTimes().size(); i++){
+						if(racerNums.get(i) == times.get(0).racerNums.get(j)){//this works for the current time object, will change if nick creates different ways of managing data
+							racers.add(new Racer(i+1, parseTime(times.get(0).finishTimes.get(j)), times.get(0).finishTimes.get(j)));
+							found = true;
+							break;
+						}
+					}
+					if(found) racers.add(new Racer(i+1, "Did not Finish!", -1));
+				}
 				break;
 				default:
 				break;
@@ -480,36 +497,87 @@ public class Chronotimer {
 		//MATT CHANGE 5/1
 		boolean canStillTrigger = true;
 		long temp = 0;
+	
 		
-		if(timesTriggered >= racerNums.size()*2 && eventType != EventType.GRP) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
-		else if(timesTriggered >= racerNums.size()+1 && eventType == EventType.GRP)canStillTrigger = false;// 5/2
+		//if(timesTriggered >= racerNums.size()*2 && eventType != EventType.GRP) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
+		//else if(timesTriggered >= racerNums.size()+1 && eventType == EventType.GRP)canStillTrigger = false;// 5/2
 		
-		
-		if (on && eventSet && newRunCalled && canStillTrigger){	
+		if (on && eventSet && newRunCalled){	
+			//do we need to check the channel sizes, if we know the event type has been set? (channels.size() >= 1) && 
 
-			
-			if ((channels.size() >= 1) && channelNum == 1) {
-				channels.get(channelNum - 1).trigger(times.get(0));
-				//if (whichRacer < racerNums.size()) { line 435}
-				times.get(0).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; timesTriggered++;
-				timeObjNum = 0;
+			switch(this.eventType){
+			case IND:
+					if (channelNum == 1 && (times.get(0).startTimes.size() + times.get(0).finishTimes.size()) != racerNums.size()) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+						times.get(0).racerNums.add(racerNums.get(whichRacer));
+						whichRacer++; timesTriggered++; 
+						timeObjNum = 0;
+					}
+					else if (channelNum == 2 && times.get(0).startTimes.size() != 0) {//there have to be people currently racing
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++; 
+					}
+				break;
+			case PARIND://how can I only allow the user to correctly trigger start and finish only the correct amount of times
+
+					if (channelNum == 1 && (times.get(0).startTimes.size() + times.get(0).finishTimes.size()) + (times.get(1).startTimes.size() + times.get(1).finishTimes.size()) != racerNums.size()) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+						times.get(0).racerNums.add(racerNums.get(whichRacer));
+						whichRacer++;
+						timeObjNum = 0;
+					}
+					else if (channelNum == 2 && times.get(0).startTimes.size() != 0) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+					}
+					else if (channelNum == 3 && (times.get(0).startTimes.size() + times.get(0).finishTimes.size()) + (times.get(1).startTimes.size() + times.get(1).finishTimes.size()) != racerNums.size()) {
+						channels.get(channelNum - 1).trigger(times.get(1));
+						times.get(1).racerNums.add(racerNums.get(whichRacer));
+						whichRacer++;
+						timeObjNum = 1;
+					}
+					else if (channelNum == 4 && times.get(1).startTimes.size() != 0) {
+						channels.get(channelNum - 1).trigger(times.get(1));
+					}	
+				
+				break;
+			case GRP:
+				if(timesTriggered >= racerNums.size() + 1) canStillTrigger = false;//the initial start plus the number of racers
+				
+				if(canStillTrigger){
+					if (channelNum == 1 && times.get(0).getStartTime().isEmpty()) {//Matt change 5/2 - can only trigger start once
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++;
+						timeObjNum = 0;
+					}
+					else if (channelNum == 2) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++;
+					}
+				}
+				break;
+			case PARGRP:
+			//	if(timesTriggered >= racerNums.size() + 1) canStillTrigger = false; // initial start plus the number of racers, technically I dont need this
+				
+					if (channelNum == 1 && times.get(0).getNumTimes() == 0) {//Matt change 5/2 - can only trigger start once
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++;
+						timeObjNum = 0;
+					}
+					else if (channelNum == 1 && times.get(0).getNumTimes() != 0 && !beenTriggered[0]) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++;
+						beenTriggered[0] = true;
+					}
+					else if (channelNum >= 2 && !beenTriggered[channelNum-1]) {
+						channels.get(channelNum - 1).trigger(times.get(0));
+						timesTriggered++;
+						beenTriggered[channelNum-1] = true;
+					}
+				break;
+			default: 
+				temp = -1;
+				break;
 			}
-			if ((channels.size() >= 2) && channelNum == 2) {
-				channels.get(channelNum - 1).trigger(times.get(0));
-				timesTriggered++;
-			}
-			if ((channels.size() >= 3) && channelNum == 3) {
-				channels.get(channelNum - 1).trigger(times.get(1));
-				times.get(1).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; timesTriggered++;
-				timeObjNum = 1;
-			}
-			if ((channels.size() >= 4) && channelNum == 4) {
-				channels.get(channelNum - 1).trigger(times.get(1));
-				timesTriggered++;
-			}	
-			//MATT CHANGE 5/1
 		}
 		return temp;
 	}
@@ -523,9 +591,15 @@ public class Chronotimer {
 	public long trigger(int channelNum, String customTime){
 		//Avoids the issue of having more racer start times than racer numbers
 		long temp = 0;
-		boolean checkTimesTriggered = true;
+		//MATT START CHANGE 5/2
+		boolean canStillTrigger = true;
 		
-		if (on && eventSet && newRunCalled) {
+		if(timesTriggered >= racerNums.size()*2 && eventType != EventType.GRP) canStillTrigger = false;//if the amount of start and finish buttons have been pressed, then trigger does nothing
+		else if(timesTriggered >= racerNums.size()+1 && eventType == EventType.GRP)canStillTrigger = false;// 5/2
+		
+		if (on && eventSet && newRunCalled & canStillTrigger) {//removed canStillTrigger from the individual if statements
+			
+			//MATT END CHANGE 5/2
 			long tempTime = times.get(0).parseMilli(customTime);
 			
 //			if (timesTriggered >= racerNums.size()) {
@@ -533,23 +607,25 @@ public class Chronotimer {
 //				temp = -1;
 //			}
 
-			if ((channels.size() >= 1) && channelNum == 1 && checkTimesTriggered) {
+			if ((channels.size() >= 1) && channelNum == 1) {
 				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
 				times.get(0).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++; timesTriggered++;
 				timeObjNum = 0;
 			}
 			if ((channels.size() >= 2) && channelNum == 2) {
 				channels.get(channelNum - 1).trigger(times.get(0),tempTime);
+				timesTriggered++;
 			}
-			if ((channels.size() >= 3) && channelNum == 3 && checkTimesTriggered) {
+			if ((channels.size() >= 3) && channelNum == 3) {
 				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
 				times.get(1).racerNums.add(racerNums.get(whichRacer));
-				whichRacer++; //timesTriggered++;
+				whichRacer++; timesTriggered++;
 				timeObjNum = 1;
 			}
 			if ((channels.size() >= 4) && channelNum == 4) {
 				channels.get(channelNum - 1).trigger(times.get(1),tempTime);
+				timesTriggered++;
 			}
 		}
 		return temp;
