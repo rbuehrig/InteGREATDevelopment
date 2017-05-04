@@ -1,0 +1,18 @@
+/*Style Sheet*/h1 {
+	font-size: 150%;
+	font-family: arial, sans-seif;
+}caption{	text-align: center;	font-family: 'Indie Flower', cursive;	font-size:20pt;}
+table{
+	font-family: arial, sans-seif;
+	border-collapse: collapse;
+}
+td,th {
+	text-align: center;
+	border: 1px solid black;
+}
+tr{
+	border: 1px solid black;
+}
+tr:nth-child(even) {
+    background-color: #34a8a6;
+}#DNF {	background-color: red;

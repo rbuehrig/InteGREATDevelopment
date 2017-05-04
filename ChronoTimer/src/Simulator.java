@@ -66,8 +66,9 @@ public class Simulator {
 			scan = new Scanner(new File("CTS3R1.txt"));
 			cmdFile = true;
 		}
-		catch(FileNotFoundException e){cmdFile = false;}	
-
+		catch(FileNotFoundException e){cmdFile = false;}
+		
+		
 		if (cmdFile){
 			while(scan.hasNextLine()){
 				commands(scan.nextLine(),timmy);

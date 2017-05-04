@@ -1,5 +1,7 @@
+import java.util.Comparator;
+
 //PHIL CHANGE 5/3/17
-public class Racer implements Comparable<Object>{
+public class Racer implements Comparable<Racer>{
 	public int number;
 	//PHIL CHANGE 5/3/2017
 	public String last;
@@ -7,6 +9,9 @@ public class Racer implements Comparable<Object>{
 	
 	public String raceTimeString;
 	public long  raceTimeLong;
+	
+	public Racer(){
+	}
 	
 	public Racer(int num, String timeStr, long timeLong){
 		this.number = num; 
@@ -51,41 +56,28 @@ public class Racer implements Comparable<Object>{
 	}
 	
 	//PHIL CHANGE 5/3/17
-	@Override
-	public int compareTo(Object o) {
-		if (o instanceof Racer) {
-			Racer other = (Racer) o;
-			if (other.raceTimeLong < 0){
-				return 1;
-			}
-			else if (this.raceTimeLong < 0){
-				return -1;
-			}
-			else {
-				long timeThis;
-				long otherTime;
-				try{
-					timeThis = this.raceTimeLong;
-					otherTime = other.raceTimeLong;
-				}
-				catch(NumberFormatException e){
-					timeThis = 0;
-					otherTime = 0;
-				}
-
-				if (timeThis > otherTime){
-					return 1;
-				}
-				else if (timeThis < otherTime){
-					return -1;
-				}
-				else {
-					return 0;
-				}
-			}
+	
+	public int compareTo(Racer o) {
+		long otherTime = ((Racer) o).raceTimeLong;
+		
+		
+		if(otherTime < 0){
+			//other is DNF
+			return -1;
 		}
-		return 0;
+		else if(this.raceTimeLong < 0){
+			//this is DNF
+			return 1;
+		}
+		else{
+			//regular times
+			return (int)(this.raceTimeLong - otherTime);
+		}
 	}
+	
+//	public int compare(Racer one, Racer two){
+//		return (int)(one.raceTimeLong - two.raceTimeLong);
+//	}
 	
 	
 }

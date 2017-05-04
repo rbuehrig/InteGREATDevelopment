@@ -401,11 +401,12 @@ public class Chronotimer {
 				}
 				break;
 			case GRP://GRP and PARGRP do the same thing? Just one time object?
+				//PHIL CHANGE 5/4/17
 				for(int i = 0; i < racerNums.size(); i++){
 					if(finishT > i)
-						racers.add(new Racer(i+1, parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
+						racers.add(new Racer(racerNums.get(i), parseTime(times.get(0).finishTimes.get(i)), times.get(0).finishTimes.get(i)));
 					else 
-						racers.add(new Racer(i+1, "Did not Finish!", -1));
+						racers.add(new Racer(racerNums.get(i), "Did not Finish!", -1));
 
 				}
 				break;
