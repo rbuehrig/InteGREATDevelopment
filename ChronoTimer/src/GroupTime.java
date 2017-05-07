@@ -1,7 +1,5 @@
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 
 //////////////////////////////////////////
 //InteGREAT Development
@@ -13,14 +11,22 @@ import java.util.NoSuchElementException;
 //
 //////////////////////////////////////////
 public class GroupTime extends Time{
+	//Every racer has the same start time
 	private long groupStartTime;
 	
+	//Store the time
 	private String timeStamp;
 
+	/**
+	 * Initializes all fields.
+	 * 
+	 * @author Nicholas Kopplin
+	 */
 	public GroupTime(){
 		groupStartTime = 0;
 		finishTimes = new LinkedList<Long>();
 		racerNums = new LinkedList<Integer>();
+		timeStamp = "";
 	}
 	
 	/**
@@ -64,10 +70,11 @@ public class GroupTime extends Time{
 	}
 	
 	/**
+	 * Only use if input is from GUI.
+	 * 
 	 * Default method for finish event
 	 * Calculates time for next racer in the the queue and adds it to a list of race times
 	 * 
-	 * @author Nicholas Kopplin
 	 * @return finish time of next racer
 	 */
 	public long finish(){
@@ -82,26 +89,67 @@ public class GroupTime extends Time{
 	}
 	
 	/**
-	 * Overload for finish()
-	 * Allows for user suppplied finish time
+	 * Only use if input is from GUI.
 	 * 
-	 * @author Nicholas Kopplin
-	 * @param finish
+	 * Submits the racer's time to finishTimes queue.
+	 * 
+	 * @param channel -- which channel was triggered
 	 * @return finish time of next racer
 	 */
-	public long finish(long finish){
-
-		if (groupStartTime > 0){
-			long time = finish - groupStartTime;
-			finishTimes.add(time);
-			return time;
+	public long finish(int channel){
+		if(groupStartTime == 0){
+			System.out.println("Race Has Not Started.");
+			return -1;
 		}
-		return 0;
+		
+		long time = System.currentTimeMillis() - groupStartTime;
+		finishTimes.remove(channel-1);
+		finishTimes.add(channel-1, time);
+		return time;
+	}
+	
+	/**
+	 * Only use if input is from file. 
+	 * 
+	 * Submits racer time to finishTimes queue.
+	 * 
+	 * @author Nicholas Kopplin
+	 * @param finishTime -- time from file
+	 * @return finish time of next racer
+	 */
+	@Override
+	public long finish(long finishTime){
+		if(groupStartTime == 0){
+			System.out.println("Race Has Not Started.");
+			return -1;
+		}
+		
+		finishTimes.add(finishTime - groupStartTime);
+		return finishTime;
+	}
+	
+	/**
+	 * Only use if input is from file.
+	 * 
+	 * Submits the racer's time to finishTimes queue.
+	 * 
+	 * @param channel -- which channel was triggered
+	 * @param finishTime -- time from file
+	 * @return finish time of next racer
+	 */
+	public long finish(int channel,long finishTime){
+		if(groupStartTime == 0){
+			System.out.println("Race Has Not Started.");
+			return -1;
+		}
+		
+		finishTimes.remove(channel-1);
+		finishTimes.add(channel-1, finishTime - groupStartTime);
+		return finishTime;
 	}
 	
 	/**
 	 * Stub for GroupTime to implement
-	 * 
 	 * 
 	 * @return groupStartTime
 	 */
@@ -120,17 +168,19 @@ public class GroupTime extends Time{
 	
 	/**
 	 * Does nothing (OVERIDE PARENT)
+	 * 
 	 * @author Philip Kocol
 	 */
-	public void cancel(){
-	}
+	public void cancel(){}
 	
 	/**
 	 * Does Nothing (OVERIDE PARENT)
+	 * 
 	 * @return -1, because we won't know how many racers there are until all have finished
 	 */
 	public int getNumTimes(){
-		return -1;
+		if (groupStartTime == 0) return 0;
+		else return 1;
 	}
 	
 }

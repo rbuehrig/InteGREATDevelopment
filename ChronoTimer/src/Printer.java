@@ -10,12 +10,25 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-
+//////////////////////////////////////////
+//InteGREAT Development
+//Class: CS 361
+//
+//Description: Printer
+//////////////////////////////////////////
 public class Printer {
+	//Print stream object
 	PrintStream output;
-
+	
+	/**
+	 * Sets up new window GUI, formats race results, and prints
+	 * results to new window.
+	 * 
+	 * @param racers -- collection of racers to print
+	 * @param rNum -- current race number
+	 */
 	private void paperTape(ArrayList<Racer> racers, int rNum){
-		int height = racers.size() * 80;
+		int height = ((racers.size()-1) * 75) + 100;
 
 		JFrame frame = new JFrame();
 		frame.setResizable(true);
@@ -33,8 +46,6 @@ public class Printer {
 		frame.add(results);
 		
 		String output = "";
-		
-		output += "----------------------------------\n";
 
 		for (Racer r: racers){
 			output += r.toString();
@@ -54,12 +65,11 @@ public class Printer {
 	 * knows its number and its time
 	 * @param outputSource Determines if output is to a different window (true)
 	 * or to file (false)
-	 * 
 	 */
 	public void print(ArrayList<Racer> racers, boolean outputSource,int raceNum) {
 		String fileName = "Race" + raceNum +".txt";
 
-		//Print to console
+		//Print to new window
 		if (outputSource){
 			paperTape(racers,raceNum);
 		}

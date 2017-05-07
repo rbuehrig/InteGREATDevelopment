@@ -1,8 +1,5 @@
-import java.time.Clock;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 
 //////////////////////////////////////////
 //InteGREAT Development
@@ -15,12 +12,18 @@ import java.util.Queue;
 //////////////////////////////////////////
 
 public class Time {
+	//Keep track of start times in order
 	protected LinkedList<Long> startTimes;
-	protected LinkedList<Long> finishTimes; //MATT CHANGE 4/30
+	
+	//Keep track of the finishTimes in order
+	protected LinkedList<Long> finishTimes;
 	
 	//Keep track of which racer corresponds to time object
 	protected LinkedList<Integer> racerNums;
 	
+	/**
+	 * Initializes class fields
+	 */
 	public Time(){
 		startTimes = new LinkedList<Long>();
 		finishTimes = new LinkedList<Long>();
@@ -41,11 +44,12 @@ public class Time {
 	}
 	
 	/**
-	 * Overload for start()
-	 * Allows for user input as start time
+	 * Only use if input is from file.
+	 * 
+	 * Sets start time as given from file.
 	 * 
 	 * @author Philip Kocol
-	 * @param start
+	 * @param start -- time from file input
 	 * @return start time that was added
 	 */
 	public long start(long start){ 
@@ -54,6 +58,8 @@ public class Time {
 	}
 	
 	/**
+	 * Only use if input is from GUI.
+	 * 
 	 * Default method for finish event
 	 * Calculates time for next racer in the the queue and adds it to a list of race times
 	 * 
@@ -75,17 +81,14 @@ public class Time {
 	}
 	
 	/**
-	 * Overload for finish()
-	 * Allows for user suppplied finish time
+	 * Only use if input is from file.
 	 * 
-	 * @author Philip Kocol
+	 * Submits racer's time to finishTimes queue.
+	 * 
 	 * @param finish
 	 * @return finish time of next racer
-	 * @throws NoSuchElementException
 	 */
 	public long finish(long finish){
-		//if(startTimes.isEmpty()) throw new NoSuchElementException("No racers started");
-		
 		if (!startTimes.isEmpty()){
 			long start = startTimes.pollFirst();
 			long time = finish - start;
@@ -93,6 +96,24 @@ public class Time {
 			return time;
 		}
 		return 0;
+	}
+	
+	/**
+	 * Stub for GroupTime to implement
+	 * 
+	 * @return Normal time object -> null; GroupTime -> start time
+	 */
+	public long finish(int channel){
+		return -1;
+	}
+	
+	/**
+	 * Stub for GroupTime to implement
+	 * 
+	 * @return Normal time object -> null; GroupTime -> start time
+	 */
+	public long finish(int channel, long finishTime){
+		return -1;
 	}
 	
 	/**
@@ -127,7 +148,6 @@ public class Time {
 		startTimes.add(startTimeFirst);
 	}
 	
-	
 	/**
 	 * Returns the amount of racers that have started.
 	 * 
@@ -136,8 +156,6 @@ public class Time {
 	public int getNumTimes(){
 		return startTimes.size();
 	}
-	
-	
 	
 	/**
 	 * Returns a list of racer times in order of when the start gate was triggered
@@ -150,7 +168,6 @@ public class Time {
 	
 	/**
 	 * Stub for GroupTime to implement
-	 * 
 	 * 
 	 * @return Normal time object -> null; GroupTime -> start time
 	 */
