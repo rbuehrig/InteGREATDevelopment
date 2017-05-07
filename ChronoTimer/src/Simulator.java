@@ -26,7 +26,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButton;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
-
 //////////////////////////////////////////
 //InteGREAT Development
 //Class: CS 361
@@ -35,7 +34,6 @@ import javax.swing.SwingConstants;
 //Description: Simulator serves as the 
 //interface for console or file input.
 //////////////////////////////////////////
-
 public class Simulator {
 	//Global variables
 	static Chronotimer timmy = new Chronotimer();
@@ -52,7 +50,7 @@ public class Simulator {
 	static boolean canToggle;
 	static boolean numbersEntered;
 	static String eventType;
-	static String[] didTheyFinish;//Matt change 5/2
+	static String[] didTheyFinish;
 
 
 	/**
@@ -995,8 +993,8 @@ public class Simulator {
 			queued += " " + timmy.racerNums.get(qPos) + "\n         ---" + "\n         ---\n\n";
 
 		else if(qPos < timmy.racerNums.size() - 1)
-			queued += "---" + "\n         ---" + "\n         ---\n\n";
-		else queued += "---" + "\n         ---" + "\n         ---\n\n";
+			queued += " ---" + "\n         ---" + "\n         ---\n\n";
+		else queued += " ---" + "\n         ---" + "\n         ---\n\n";
 
 
 		String current = "Current: ";
@@ -1035,7 +1033,7 @@ public class Simulator {
 		if(qPos + 1 <= timmy.racerNums.size() - 1)
 			upNext += timmy.racerNums.get(qPos) + "\n        " + timmy.racerNums.get(qPos+1);
 		else if(qPos == timmy.racerNums.size() - 1)
-			upNext += timmy.racerNums.get(qPos) + "\n     ---";
+			upNext += timmy.racerNums.get(qPos) + "\n        ---";
 		else 
 			upNext += "---" + "\n        ---";
 
