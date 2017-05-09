@@ -61,7 +61,7 @@ public class Simulator {
 	 */
 	public static void main(String[] args) {		
 		try{	
-			scan = new Scanner(new File("CTS4R1.txt"));
+			scan = new Scanner(new File("CTS4R.txt"));
 			cmdFile = true;
 		}
 		catch(FileNotFoundException e){cmdFile = false;}	
